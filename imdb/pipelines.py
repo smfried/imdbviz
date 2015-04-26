@@ -23,7 +23,8 @@ class DuplicatesPipeline(object):
             self.ids_seen.add(item['url'])
             return item
 
+#not working
 class CleanTitlePipeline(object):
 	def process(self, item, spider):
-		print item['title'][0]
-		item['title'] = item['title'][0]
+		while len(item['title'] > 1):
+			item['title'].pop()

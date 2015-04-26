@@ -14,4 +14,5 @@ class Website(Item):
     image = Field()
     director = Field()
     year = Field()
+    country = Field()
     summary = Field()

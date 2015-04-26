@@ -10,6 +10,10 @@ from imdb.items import Website
 
 #fix titles? 
 
+#add image download pipeline
+
+#todo: get country, download images
+
 class ImdbSpider(Spider):
     print "hello"
     name = "imdb"
@@ -39,6 +43,7 @@ class ImdbSpider(Spider):
         #item['director'] = response.xpath('//div[contains(@itemprop, "director")]//span/text()').extract()
         #item['year'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@class, "nobr")]//a/text()').extract()
         #item['summary'] = response.xpath('//p[contains(@itemprop, "description")]/text()').extract()
+        item['country'] = response.xpath('//h4[contains(text(), "Country")]/following-sibling::node()/text()').extract()
         yield item
 
         #   "www.imdb.com" + url
