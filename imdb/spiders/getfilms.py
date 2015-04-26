@@ -12,7 +12,7 @@ from imdb.items import Website
 
 #add image download pipeline
 
-#todo: get country, download images
+#todo: download images, get all data, write script to clean data 
 
 class ImdbSpider(Spider):
     print "hello"
@@ -39,14 +39,12 @@ class ImdbSpider(Spider):
     def parse_page(self,response):
         item = response.meta['item']
         item['title'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@itemprop, "name")]/text()').extract()
-        #item['image'] = response.xpath('//td[contains(@id, "img_primary")]//img/@src').extract()
+        item['image'] = response.xpath('//td[contains(@id, "img_primary")]//img/@src').extract()
         #item['director'] = response.xpath('//div[contains(@itemprop, "director")]//span/text()').extract()
         #item['year'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@class, "nobr")]//a/text()').extract()
         #item['summary'] = response.xpath('//p[contains(@itemprop, "description")]/text()').extract()
-        item['country'] = response.xpath('//h4[contains(text(), "Country")]/following-sibling::node()/text()').extract()
+        #item['country'] = response.xpath('//h4[contains(text(), "Country")]/following-sibling::node()/text()').extract()
         yield item
-
-        #   "www.imdb.com" + url
 
 #then get images to display
 
@@ -59,12 +57,3 @@ class ImdbSpider(Spider):
 
 #add pipeline to get rid of data with empty fields
 
-#read from war.jl, write to new file - how to do this???
-#get correct paths for all data wanted - create list of sites same way 
-
-#by end of today: all data in json, start d3 file
-#get all poster to render, then mouseover, then click 
-#have posters float around?
-#after render, get feedback
-
-#top 5000 films
