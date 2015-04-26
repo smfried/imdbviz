@@ -1,5 +1,6 @@
 from scrapy.spider import Spider
 from scrapy.selector import Selector
+from scrapy.http import Request
 
 from imdb.items import Website
 
@@ -22,23 +23,17 @@ class ImdbSpider(Spider):
         items = []
 
         for url in sel.xpath('//a[contains(@href, "title/tt")]/@href'):
-            item = Website()
-            item['url'] = "www.imdb.com" + url.extract()
-            req_url = "www.imdb.com" + url.extract()
-            print req_url
-            #request = scrapy.Request(req_url,
-            #                 callback=self.parse_page)
-            #request.meta['item'] = item
-            items.append(item)
-
-        return items
+            req_url = "http://www.imdb.com" + url.extract()
+            yield Request(url=req_url, meta={'item': Website(url=req_url)}, callback=self.parse_page)
 
     def parse_page(self,response):
         item = response.meta['item']
-
-        item['title'] = "test"
-
-        return item
+        #item['title'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@itemprop, "name")]/text()').extract()
+        #item['image'] = response.xpath('//td[contains(@id, "img_primary")]//img/@src').extract()
+        item['director'] = response.xpath('//div[contains(@itemprop, "director")]//span/text()').extract()
+        #item['year'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@class, "nobr")]//a/text()').extract()
+        #item['summary'] = response.xpath('//p[contains(@itemprop, "description")]/text()').extract()
+        yield item
 
         #   "www.imdb.com" + url
 
