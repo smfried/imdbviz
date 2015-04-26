@@ -7,17 +7,6 @@
 import json
 from scrapy.exceptions import DropItem
 
-# class JsonWriterPipeline(object):
-
-#     def __init__(self):
-#         self.file = open('items.jl', 'wb')
-
-#     def process_item(self, item, spider):
-#         line = json.dumps(dict(item)) + "\n"
-#         self.file.write(line)
-#         return item
-
-
 class DuplicatesPipeline(object):
 
     def __init__(self):
@@ -33,3 +22,8 @@ class DuplicatesPipeline(object):
         else:
             self.ids_seen.add(item['url'])
             return item
+
+class CleanTitlePipeline(object):
+	def process(self, item, spider):
+		print item['title'][0]
+		item['title'] = item['title'][0]

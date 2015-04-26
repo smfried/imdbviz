@@ -15,9 +15,7 @@ NEWSPIDER_MODULE = 'imdb.spiders'
 
 DEFAULT_ITEM_CLASS = 'imdb.items.Website'
 
-#ITEM_PIPELINES = {'imdb.pipelines.JsonWriterPipeline', 'imdb.pipelines.DuplicatesPipeline'}
-
-ITEM_PIPELINES = {'imdb.pipelines.DuplicatesPipeline'}
+ITEM_PIPELINES = {'imdb.pipelines.DuplicatesPipeline', 'imdb.pipelines.CleanTitlePipeline'}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'imdb (+http://www.yourdomain.com)'

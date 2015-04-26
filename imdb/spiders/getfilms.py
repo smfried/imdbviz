@@ -4,6 +4,12 @@ from scrapy.http import Request
 
 from imdb.items import Website
 
+#need to pause and resume - 403 errors 
+
+#decode unicode
+
+#fix titles? 
+
 class ImdbSpider(Spider):
     print "hello"
     name = "imdb"
@@ -28,16 +34,15 @@ class ImdbSpider(Spider):
 
     def parse_page(self,response):
         item = response.meta['item']
-        #item['title'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@itemprop, "name")]/text()').extract()
+        item['title'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@itemprop, "name")]/text()').extract()
         #item['image'] = response.xpath('//td[contains(@id, "img_primary")]//img/@src').extract()
-        item['director'] = response.xpath('//div[contains(@itemprop, "director")]//span/text()').extract()
+        #item['director'] = response.xpath('//div[contains(@itemprop, "director")]//span/text()').extract()
         #item['year'] = response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@class, "nobr")]//a/text()').extract()
         #item['summary'] = response.xpath('//p[contains(@itemprop, "description")]/text()').extract()
         yield item
 
         #   "www.imdb.com" + url
 
-#chain callback, store rest of data 
 #then get images to display
 
 #get all data for all urls 
@@ -47,13 +52,7 @@ class ImdbSpider(Spider):
 #title - response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@itemprop, "name")]/text()').extract()
 #year - response.xpath('//td[contains(@id, "overview-top")]//h1//span[contains(@class, "nobr")]//a/text()').extract()
 
-# class FilmSpider(Spider):
-#     name = "film"
-#     allowed_domains = ["imdb.com"]
-
-#drop data with empty fields
-
-#add pipeline to get rid of empty fields
+#add pipeline to get rid of data with empty fields
 
 #read from war.jl, write to new file - how to do this???
 #get correct paths for all data wanted - create list of sites same way 
