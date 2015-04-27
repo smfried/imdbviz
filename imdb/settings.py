@@ -17,5 +17,7 @@ DEFAULT_ITEM_CLASS = 'imdb.items.Website'
 
 ITEM_PIPELINES = {'imdb.pipelines.DuplicatesPipeline', 'imdb.pipelines.CleanTitlePipeline'}
 
+IMAGES_STORE = 'Desktop/images'
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'imdb (+http://www.yourdomain.com)'

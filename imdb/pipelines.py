@@ -5,7 +5,9 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import json
+import scrapy
 from scrapy.exceptions import DropItem
+from scrapy.contrib.pipeline.images import ImagesPipeline
 
 class DuplicatesPipeline(object):
 
@@ -22,6 +24,19 @@ class DuplicatesPipeline(object):
         else:
             self.ids_seen.add(item['url'])
             return item
+
+# class DownloadImagesPipeline(ImagesPipeline):
+
+#     def get_media_requests(self, item, info):
+#         for image_url in item['image']:
+#             yield scrapy.Request(image_url)
+
+#     def item_completed(self, results, item, info):
+#         image_paths = [x['path'] for ok, x in results if ok]
+#         if not image_paths:
+#             raise DropItem("Item contains no images")
+#         item['image'] = image_paths
+#         return item
 
 #not working
 class CleanTitlePipeline(object):
