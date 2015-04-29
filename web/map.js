@@ -2,6 +2,8 @@
 var data; //save this?
 var start_x = -20;
 var start_y = 10;
+var colors = ['#0000b4','#0082ca','#0094ff','#0d4bcf','#0066AE','#074285','#00187B','#285964','#405F83','#416545','#4D7069','#6E9985','#7EBC89','#0283AF','#79BCBF','#99C19E'];
+
 
 //globals for poster sizes
 //country - will need to change count per year in country_data json
@@ -20,8 +22,6 @@ var start_y = 10;
 
 */
 
-//country list
-
 //prelim mouseover, click
 
 //TODO fix this for chrome - wrap call
@@ -30,6 +30,8 @@ var start_y = 10;
 
 //svg image elements	
 
+//scale according to number of elements
+//pass in more option args
 function set_location(data) {
 	var x_space = 0;
 	var y_space = 0;
@@ -103,7 +105,119 @@ function callback(data) {
 
 //put this in a div and format
 //create div, make bar graph
+//implement click to only show that country / back to all countries
+//add map
 function country_callback(country_data) {
+	var num_countries = Object.keys(country_data).length;
+	console.log(num_countries);
+
+
+		var grid = d3.range(25).map(function(i){
+			return {'x1':0,'y1':0,'x2':0,'y2':480};
+		});
+
+		var tickVals = grid.map(function(d,i){
+			if(i>0){ return i*10; }
+			else if(i===0){ return "100";}
+		});
+
+		var xscale = d3.scale.linear()
+						.domain([10,250])
+						.range([0,722]);
+
+		var yscale = d3.scale.linear()
+						.domain([0,num_countries])
+						.range([0,480]);
+
+		var colorScale = d3.scale.quantize()
+						.domain([0,num_countries])
+						.range(colors);
+
+		var canvas = d3.select('#wrapper')
+						.append('svg')
+						.attr({'width':900,'height':550});
+
+		// var grids = canvas.append('g')
+		// 				  .attr('id','grid')
+		// 				  .attr('transform','translate(150,10)')
+		// 				  .selectAll('line')
+		// 				  .data(grid)
+		// 				  .enter()
+		// 				  .append('line')
+		// 				  .attr({'x1':function(d,i){ return i*30; },
+		// 						 'y1':function(d){ return d.y1; },
+		// 						 'x2':function(d,i){ return i*30; },
+		// 						 'y2':function(d){ return d.y2; },
+		// 					})
+		// 				  .style({'stroke':'#adadad','stroke-width':'1px'});
+
+		// var	xAxis = d3.svg.axis();
+		// 	xAxis
+		// 		.orient('bottom')
+		// 		.scale(xscale)
+		// 		.tickValues(tickVals);
+
+		// var	yAxis = d3.svg.axis();
+		// 	yAxis
+		// 		.orient('left')
+		// 		.scale(yscale)
+		// 		.tickSize(2)
+		// 		.data(country_data)
+		// 		.tickFormat(function(d){ return d; })
+		// 		.tickValues(d3.range(17));
+
+		// var y_xis = canvas.append('g')
+		// 				  .attr("transform", "translate(150,0)")
+		// 				  .attr('id','yaxis')
+		// 				  .call(yAxis);
+
+		// var x_xis = canvas.append('g')
+		// 				  .attr("transform", "translate(150,480)")
+		// 				  .attr('id','xaxis')
+		// 				  .call(xAxis);
+
+		//country_data[d]
+		//spacing between bars?
+		//log scale, spacing, colors, hover show number, axis on bottom
+		var chart = canvas.append('g')
+					.attr("transform", "translate(150,0)")
+					.attr('id', 'bars')
+					.selectAll('rect')
+					.data(d3.keys(country_data))
+					.enter()
+					.append('rect')
+					.attr('height', 5)
+					.attr({'x':100, 'y':function(d,i) {return yscale(i)+40; }})
+					.style('fill', 'red')
+					.attr('width', function(d) {return country_data[d]}); //new scale function
+
+
+		// var chart = canvas.append('g')
+		// 					.attr("transform", "translate(150,0)")
+		// 					.attr('id','bars')
+		// 					.selectAll('rect')
+		// 					.data(country_data)
+		// 					.enter()
+		// 					.append('rect')
+		// 					.attr('height',19)
+		// 					.attr({'x':0,'y':function(d,i){ return yscale(i)+19; }})
+		// 					.style('fill',function(d,i){ return colorScale(i); })
+		// 					.attr('width',function(d){ return 0; });
+
+
+		// var transit = d3.select("svg").selectAll("rect")
+		// 				    .data(country_data)
+		// 				    .transition()
+		// 				    .duration(1000) 
+		// 				    .attr("width", function(d) {return xscale(d); });
+
+		var transitext = d3.select('#bars')
+							.selectAll('text')
+							.data(d3.keys(country_data))
+							.enter()
+							.append('text')
+							.attr({'x':function(d) {return d-100; },'y':function(d,i){ return yscale(i) + 30; }})
+							.text(function(d){ return d; }).style({'fill':'black','font-size':'12px'});
 		//diff element than p
 	d3.select("body").selectAll("p")
     	.data(d3.keys(country_data))
@@ -114,7 +228,7 @@ function country_callback(country_data) {
 }
 
 $.getJSON( "../data/small_data.json", function(json) {
- 	callback(json); 
+ 	//callback(json); 
 });
 
 //fix asynchronous callbacks
