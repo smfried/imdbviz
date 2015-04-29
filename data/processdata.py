@@ -1,5 +1,4 @@
 import json
-#write to new file
 
 with open("items.json", "r") as f:
 	data = json.loads(f.read())
