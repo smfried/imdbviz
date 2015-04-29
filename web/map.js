@@ -107,6 +107,8 @@ function callback(data) {
 //create div, make bar graph
 //implement click to only show that country / back to all countries
 //add map
+
+//take USA out of graph
 function country_callback(country_data) {
 	var num_countries = Object.keys(country_data).length;
 	console.log(num_countries);
@@ -122,7 +124,7 @@ function country_callback(country_data) {
 		});
 
 		var xscale = d3.scale.linear()
-						.domain([10,250])
+						.domain([1,1784])
 						.range([0,722]);
 
 		var yscale = d3.scale.linear()
@@ -177,19 +179,26 @@ function country_callback(country_data) {
 		// 				  .call(xAxis);
 
 		//country_data[d]
-		//spacing between bars?
 		//log scale, spacing, fix colors, hover show number, axis on bottom? 
 		var chart = canvas.append('g')
-					.attr("transform", "translate(150,0)")
+					.attr("transform", "translate(950,0)")
 					.attr('id', 'bars')
 					.selectAll('rect')
 					.data(d3.keys(country_data))
 					.enter()
 					.append('rect')
 					.attr('height', 2)
-					.attr({'x':100, 'y':function(d,i) {return yscale(i)+40; }})
+					.attr({'x':100, 'y':function(d,i) {
+						if (d != "USA") {		//if statement could be buggy, check
+							return yscale(i)+40; 
+						}
+					}})
 					.style('fill', function(d, i) {return colorScale(i);})
-					.attr('width', function(d) {return country_data[d]}); //new scale function
+					.attr('width', function(d) {
+						if (d != "USA") {
+							return xscale(country_data[d])
+						}
+					}); //new scale function
 
 
 		// var chart = canvas.append('g')
@@ -216,16 +225,30 @@ function country_callback(country_data) {
 							.data(d3.keys(country_data))
 							.enter()
 							.append('text')
-							.attr({'x':function(d) {return d-100; },'y':function(d,i){ return yscale(i) + 30; }})
-							.text(function(d){ return d; }).style({'fill':'black','font-size':'9px'});
-		//log scale, 2 columns, fix spacing, fix colors
+							.attr({'x':function(d) {
+								if (d != "USA")
+								return d-200; 
+							},'y':function(d,i) { 
+								if (d != "USA")
+								return yscale(i) + 42; 
+							}})
+							.text(function(d) { 
+								if (d != "USA") {
+									return d; 
+								}
+							}).style({'fill':'black','font-size':'9px'});
+		//2 columns, fix spacing, fix colors
+		//scrolls with floating bar graph
+
+		//select by region and then select by country
+
+		//fix positioning so divs go next to each other
 }
 
 $.getJSON( "../data/small_data.json", function(json) {
- 	//callback(json); 
+ 	callback(json); 
 });
 
-//fix asynchronous callbacks
 $.getJSON("../data/country_data.json", function(json) {
 	country_callback(json);
 });
