@@ -127,7 +127,7 @@ function country_callback(country_data) {
 
 		var yscale = d3.scale.linear()
 						.domain([0,num_countries])
-						.range([0,480]);
+						.range([0,700]);
 
 		var colorScale = d3.scale.quantize()
 						.domain([0,num_countries])
@@ -135,7 +135,7 @@ function country_callback(country_data) {
 
 		var canvas = d3.select('#wrapper')
 						.append('svg')
-						.attr({'width':900,'height':550});
+						.attr({'width':1300,'height':800});
 
 		// var grids = canvas.append('g')
 		// 				  .attr('id','grid')
@@ -178,7 +178,7 @@ function country_callback(country_data) {
 
 		//country_data[d]
 		//spacing between bars?
-		//log scale, spacing, colors, hover show number, axis on bottom
+		//log scale, spacing, fix colors, hover show number, axis on bottom? 
 		var chart = canvas.append('g')
 					.attr("transform", "translate(150,0)")
 					.attr('id', 'bars')
@@ -186,9 +186,9 @@ function country_callback(country_data) {
 					.data(d3.keys(country_data))
 					.enter()
 					.append('rect')
-					.attr('height', 5)
+					.attr('height', 2)
 					.attr({'x':100, 'y':function(d,i) {return yscale(i)+40; }})
-					.style('fill', 'red')
+					.style('fill', function(d, i) {return colorScale(i);})
 					.attr('width', function(d) {return country_data[d]}); //new scale function
 
 
@@ -217,14 +217,8 @@ function country_callback(country_data) {
 							.enter()
 							.append('text')
 							.attr({'x':function(d) {return d-100; },'y':function(d,i){ return yscale(i) + 30; }})
-							.text(function(d){ return d; }).style({'fill':'black','font-size':'12px'});
-		//diff element than p
-	d3.select("body").selectAll("p")
-    	.data(d3.keys(country_data))
-    	.enter()
-    	.append("p")
-
-    d3.selectAll("p").text(function(d) { return d + " " + country_data[d]; });
+							.text(function(d){ return d; }).style({'fill':'black','font-size':'9px'});
+		//log scale, 2 columns, fix spacing, fix colors
 }
 
 $.getJSON( "../data/small_data.json", function(json) {
