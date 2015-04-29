@@ -4,6 +4,7 @@ var start_x = -20;
 var start_y = 10;
 
 //globals for poster sizes
+//country - will need to change count per year in country_data json
 
 /*
 -import files and ajax request them 
@@ -50,9 +51,12 @@ function set_location(data) {
 
 //this should call other functions
 //add onload to make less ugly
+//country panel/map 
+//smaller posters/
 function callback(data) {
 	//console.log(data[1].title[0]);
 
+	//diff element than p
 	// d3.select("body").selectAll("p")
  //    	.data(data)
  //    	.enter()
@@ -95,11 +99,27 @@ function callback(data) {
 	//click images and show info *
 	//make div with images into a view
 	//scale to fit according to location/date - d3 filter function
-
 }
 
-$.getJSON( "../data/small_data.json", function( json ) {
+//put this in a div and format
+//create div, make bar graph
+function country_callback(country_data) {
+		//diff element than p
+	d3.select("body").selectAll("p")
+    	.data(d3.keys(country_data))
+    	.enter()
+    	.append("p")
+
+    d3.selectAll("p").text(function(d) { return d + " " + country_data[d]; });
+}
+
+$.getJSON( "../data/small_data.json", function(json) {
  	callback(json); 
+});
+
+//fix asynchronous callbacks
+$.getJSON("../data/country_data.json", function(json) {
+	country_callback(json);
 });
 
 
