@@ -1,4 +1,6 @@
 import json
+import collections
+from collections import OrderedDict
 
 with open("data.json", "r") as f:
 	data = json.loads(f.read())
@@ -14,6 +16,8 @@ with open("data.json", "r") as f:
 			else:
 				new_data[country_to_add] = new_data[country_to_add] + 1
 
+
+	new_data = collections.OrderedDict(sorted(new_data.items()))
 
 	with open('country_data.json', 'w') as outfile:
 		json.dump(new_data, outfile)
