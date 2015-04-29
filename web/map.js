@@ -1,10 +1,12 @@
 
 var data; //save this?
+var start_x = -20;
+var start_y = 10;
+
+//globals for poster sizes
 
 /*
 -import files and ajax request them 
--get image urls, display image urls
--display images
 -display images by decade
 -group by country? how to do this?
 
@@ -17,8 +19,9 @@ var data; //save this?
 
 */
 
-//today: images working
-//tomorrow: map and dateslider (mvc), lit review
+//country list
+
+//prelim mouseover, click
 
 //TODO fix this for chrome - wrap call
 //save with callback function
@@ -26,7 +29,27 @@ var data; //save this?
 
 //svg image elements	
 
+function set_location(data) {
+	var x_space = 0;
+	var y_space = 0;
+    for(var i=0;i<data.length;i++){
+		if (data[i].image[0]) {
+			data[i].x = start_x + (140 * x_space);
+			//change this to account for browser size
+			data[i].y = start_y + (200 * y_space);
+			x_space++;
+			if (x_space % 5 == 0) {
+				x_space = 0;
+				y_space++;
+			}
+		}
+	}
+
+	return data;
+}
+
 //this should call other functions
+//add onload to make less ugly
 function callback(data) {
 	//console.log(data[1].title[0]);
 
@@ -35,25 +58,38 @@ function callback(data) {
  //    	.enter()
  //    	.append("p")
 
- //    d3.selectAll("p").text(function(d) { return d.title; });
+ //    d3.selectAll("p").text(function(d) { return d.country; });
 
-    var svg = d3.select("body")
-            .append("svg")
-            .attr("width", 2000)
-            .attr("height", 1000)
-            .style("border", "1px solid black");
+ //need to create new data file, then do checks across files for country section**
+ //python script, countries and counts, if country==country? want mvc
+
+ 	data = set_location(data);
+
+ 	//use to create dateslider
+ 	var min_year = d3.min(data, function(d) {return d.year[0]; });
+ 	var max_year = d3.max(data, function(d) {return d.year[0]; });
+
+	var svg = d3.select("body")
+		.append("svg")
+		.attr("width", 2000)	//get size of browser? 
+		.attr("height", 1000);
 
 
-    //only showing one image
-    var imgs = svg.selectAll("image").data(data);
-    imgs.enter()
-        .append("svg:image")
-        .attr("xlink:href", function (d) { return d.image ; })
-        .attr("x", "60")
-        .attr("y", "60")
-        .attr("width", "200")
-        .attr("height", "200");
-    //display actual images
+	//need to space images - function? 
+    var imgs = d3.select("svg").selectAll("image")
+    	.data(data)
+    	.enter()
+    	.append("svg:image")
+    	.attr("xlink:href", function (d) { return d.image ; })
+    	.attr("x", function (d) { return d.x; }) 
+    	.attr("y", function (d) { return d.y; })
+    	.attr("width", "200")
+    	.attr("height", "200");
+
+    //add mouseover/click to show data - title, director, year
+
+
+
 	//mouseover images * - change size, move other images - or just tooltip showing info? depends on size
 	//mouseover show title, director, year
 	//click images and show info *
