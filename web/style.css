@@ -1,14 +1,90 @@
-.buttons {
-	margin-top: 10px;
+.selection-box {
+    display: table;
+    width: 250px;
+    height: 1000px;
+    background: white;
+    opacity: .75;
+    position: absolute;
+    margin-left: 1000px;
 }
 
-input {
-    width: 100px;
-    margin-bottom: 9px;
-    margin-left: 1100px;
-    margin-right: 35px;
+button {
+    color: black;
+    font-size: 7pt; 
+}
+
+#afr-button {
     background-color: white;
+    visibility: hidden;
+    margin-left: 15px;
+    margin-right: 9px;
+    margin-top: 9px;
 }
 
-svg {
+#asia-button {
+    background-color: white;
+    visibility: hidden;
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-top: 25px;
+}
+
+#ca-button {
+    background-color: white;
+    visibility: hidden;
+
+}
+
+#ee-button {
+    background-color: white;
+    visibility: hidden;
+    margin-left: 22px;
+    margin-right: 5px;
+    margin-top: 9px;
+}
+
+#eu-button {
+    background-color: white;
+    visibility: hidden;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 9px;
+}
+
+#mideast-button {
+    background-color: white;
+    visibility: hidden;
+    margin-left: 35px;
+    margin-right: 9px;
+    margin-top: 9px;
+}
+
+#na-button {
+    background-color: white;
+    visibility: hidden;
+    margin-left: 5px;
+    margin-right: 20px;
+    margin-top: 9px;
+}
+
+#ocean-button {
+    background-color: white;
+    visibility: hidden;
+    margin-left: 10px;
+    margin-right: 5px;
+    margin-top: 9px;
+}
+
+#sa-button {
+    background-color: white;
+    visibility: hidden;
+
+}
+
+#carib-button {
+    background-color: white;
+    visibility: hidden;
+    margin-top: 9px;
+    margin-left: 10px;
+
 }

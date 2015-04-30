@@ -1,8 +1,6 @@
 //thurs:
 /*
-1. image sizing and parameters (country and date) - default to entire screen for now, layer selection box on top
---divide browser size (check this) by number of films
-(1a. make floating box)
+
 2. Fix button positions / mouseover for graph to show numbers / button backgrounds / 
 3. Implement on click to show films (non-ugly rendering if time)
 3. If time, mouseover on each poster
@@ -82,7 +80,7 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 //scale according to number of elements
 //pass in more option args
 //sizing based on width of image, get from metadata or not?
-function set_location(data) {
+function set_location(data, country) {
 	var x_space = 0;
 	var y_space = 0;
 	var films_per_row = 41;
@@ -91,7 +89,7 @@ function set_location(data) {
 	var y_margin = 50;
 
     for(var i=0;i<data.length;i++){
-		if (data[i].image[0]) {
+		if (data[i].image[0]) { 	//&& data[i].country[0] && data[i].country[0] == "Laos" - not working, need to change coords as well
 			data[i].x = start_x + (x_margin * x_space);
 			//change this to account for browser size
 			data[i].y = start_y + (y_margin * y_space);
@@ -106,16 +104,18 @@ function set_location(data) {
 	return data;
 }
 
-//only showing 800 films.. automatic scrolling? 
 //2. display films by country - test with US, then with laos, etc
-//3. display films by date - test with several years
 //4. mouseover/animation - main film gets bigger, other films squish down into black lines, then squish back up
-		// or film just gets bigger and others stay behind it if that looks ok
-//5. add floaty box
+		// or film just gets bigger and others stay behind it if that looks ok - mouseover with title/director/year - just show year here
+//5. add country filtering, possibly year filtering 
+
+//more than one country at once/if checked off / making rendering look good based on number of films to render
+
+//scroll down from intro and stay there- on scroll hide textbox - or hide button, but if scroll back up see text
 
 //put in div and pad
-function callback(data, country, date) {
- 	data = set_location(data);
+function callback(data, country) {
+ 	data = set_location(data, country);
 
 	var w = window,
 	    d = document,
@@ -142,6 +142,23 @@ function callback(data, country, date) {
     	.attr("width", "50")
     	.attr("height", "50");
 
+    d3.select(".selection-box").style("background", "grey"); 
+    				//.on("click", )	//hide and show
+
+    d3.selectAll("button").style("visibility", "visible");
+    			//.style("background-color", "red");
+
+    $.getJSON("../data/country_data.json", function(json) {
+    	build_buttons(json);
+    });
+
+    //add button absolute x/y
+    //make absolute relative to page so it scrolls with user
+    //images: scrolling within div, make border
+    //filter by country
+
+    //click - grow out of center, animation - or get dark and appear in center, click outside to go back
+
     //add mouseover/click to show data - title, director, year
 
 	//mouseover images * - change size, move other images - or just tooltip showing info? depends on size
@@ -159,34 +176,45 @@ function callback(data, country, date) {
 //DIV POSITIONING
 //STATIC POSITIONING
 function build_buttons(country_data) {	
-	var w = window,
-	    d = document,
-	    e = d.documentElement,
-	    g = d.getElementsByTagName('body')[0],
-	    x = w.innerWidth || e.clientWidth || g.clientWidth,
-    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+	// var w = window,
+	//     d = document,
+	//     e = d.documentElement,
+	//     g = d.getElementsByTagName('body')[0],
+	//     x = w.innerWidth || e.clientWidth || g.clientWidth,
+ //    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-	var svg = d3.select("body")
-		.append("navbox")
-		.attr({'x': 0, 'y': 10})
-		.attr("width", 1000)
-		.attr("height", 2000);
+ // var svg = d3.select("body")
+ // 	.append("navbox")
+ // 	.attr({'x': 0, 'y': 10})
+ // 	.attr("width", 1000)
+ // 	.attr("height", 2000);
 
-	d3.select("navbox").selectAll("input")
-			.data(regions)
-			.enter()
-			.append("input")
-			.attr("type","button")
-			.attr("class","button")
-			// .attr({'x': function(d, i) {
-			// 	return i + 100; 
-			// }, 'y': function (d, i) {
-			// 	return i + 1000;
-			// }})
-			.attr("value", function (d) {return d;} )
-			.on("click", function () { 
-				display_countries(country_data, this.value);
-			});
+
+
+
+
+	// d3.select(".selection-box").selectAll("input")
+	// 		.data(regions)
+	// 		.enter()
+	// 		.append("input")
+	// 		.attr("type","button")
+	// 		.attr("class","button")
+	// 		// .attr({'x': function(d, i) {
+	// 		// 	return i + 100; 
+	// 		// }, 'y': function (d, i) {
+	// 		// 	return i + 1000;
+	// 		// }})
+	// 		.attr("value", function (d) {return d;} )
+	// 		.on("click", function () { 
+	// 			display_countries(country_data, this.value);
+	// 		});
+
+
+	d3.selectAll("button")
+		//.style("visibility", "visible")
+		.on("click", function() {
+			console.log(this.value);
+		});
 
 			// var canvas = d3.select('#wrapper')
 			// 			.append('svg')
@@ -247,8 +275,6 @@ function display_countries(country_data, region) {
 					.attr({'x':100, 'y':function(d,i) {
 						if (regions_with_countries[region].indexOf(d) > -1) {
 							return yscale(regions_with_countries[region].indexOf(d)) + 30 + regions_with_countries[region].indexOf(d)*30; 
-
-							//return yscale(i)+40; //same as below to fix? yup, no more i
 						}
 					}})
 					.style('fill', function(d, i) {return colorScale(i);})
@@ -269,8 +295,7 @@ function display_countries(country_data, region) {
 									return d-200; 
 								}
 							},'y':function(d,i) { 
-								if (regions_with_countries[region].indexOf(d) > -1) { //ycoord of text - need to fix this
-										//get index in region array and space accordingly, find matching 
+								if (regions_with_countries[region].indexOf(d) > -1) { 
 									return yscale(regions_with_countries[region].indexOf(d)) + 44 + regions_with_countries[region].indexOf(d)*30; 
 								}
 							}})
@@ -283,13 +308,13 @@ function display_countries(country_data, region) {
 
 
 //put these inside another function, on ready state etc IF TIME
-$.getJSON( "../data/data.json", function(json) {
- 	callback(json, "all", "all"); //NEED TO FIX RENDERING ISSUE****
+$.getJSON( "../data/small_data.json", function(json) {
+ 	callback(json, "all");
 });
 
-$.getJSON("../data/country_data.json", function(json) {
-	//build_buttons(json);
-});
+// $.getJSON("../data/country_data.json", function(json) {
+// 	build_buttons(json);
+// });
 
 // function getData() {
 
