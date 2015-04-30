@@ -1,19 +1,22 @@
 //thurs:
 /*
 
-2. Fix button positions / mouseover for graph to show numbers / button backgrounds / 
-3. Implement on click to show films (non-ugly rendering if time)
-3. If time, mouseover on each poster
-4. Add show all button to go back to start state
+GET RID OF OPACITY
+mouseover for graph to show numbers 
+1. click to show films (non-ugly rendering if time) - re-render function
+2. click on film
+3. graph scaling and design/colors
+
+(3. button backgrounds - make buttons pop / collapse css button)
+4. Click on poster
+5. Add show all button to go back to start state
+
+if time, general highlight box to click on graph and display films / zooming
 
 intro/scroll down and intro disappears - how to do this
 definitely write intro with some data analysis and observations about countries
 US bias undoubtedly because IMDB is US-based? or is IMDB comprehensive, and the US makes the most movies (probably both but check)
 discuss a few examples
-
-if time:
--floating selection box to choose region, country, date with show and hide options
-(online)
 
 intro -> scroll -> all films/box open -> option to close box
 
@@ -21,9 +24,6 @@ no map/no multiple countries
 
 */
 
-
-
-var data; //save this?
 var start_x = 0;
 var start_y = 0;
 
@@ -75,15 +75,13 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 //save with callback function
 //have to save for mouseover images and click images
 
-//svg image elements	
-
 //scale according to number of elements
 //pass in more option args
 //sizing based on width of image, get from metadata or not?
-function set_location(data, country) {
+function set_location(data) {
 	var x_space = 0;
 	var y_space = 0;
-	var films_per_row = 41;
+	var films_per_row = 32;
 
 	var x_margin = 30;
 	var y_margin = 50;
@@ -113,9 +111,9 @@ function set_location(data, country) {
 
 //scroll down from intro and stay there- on scroll hide textbox - or hide button, but if scroll back up see text
 
-//put in div and pad
-function callback(data, country) {
- 	data = set_location(data, country);
+//pass in array of country options
+function display_posters(data) {
+ 	data = set_location(data);
 
 	var w = window,
 	    d = document,
@@ -129,6 +127,7 @@ function callback(data, country) {
 
 	var svg = d3.select("body")
 		.append("svg")
+		.attr('id', 'posters')
 		.attr("width", x)
 		.attr("height", 2800);
 
@@ -147,12 +146,109 @@ function callback(data, country) {
 
     d3.selectAll("button").style("visibility", "visible");
     			//.style("background-color", "red");
+}
 
-    $.getJSON("../data/country_data.json", function(json) {
-    	build_buttons(json);
-    });
+function build_buttons(country_data) {	
+	d3.selectAll("button")
+		.on("click", function() {
+			display_countries(country_data, this.value);
+		});
+}
 
-    //add button absolute x/y
+
+//fix font and colors - sizes a little smaller to fit all of asia
+//onclick to each bar graph element which calls films render function
+//start out with all films displaying
+//button to go back to all films
+function display_countries(country_data, region) {
+	var num_countries = regions_with_countries[region].length;
+	console.log(num_countries);
+
+	//xscale - max and with filter
+	//yscale - takes in i, replace with own function, domain is size of region
+
+	var xscale = d3.scale.linear()
+					.domain([0,100])
+					.range([0,722]);
+
+	var yscale = d3.scale.linear()
+					.domain([0,200]) //multiple by num_countries
+					.range([0,700]);
+
+	var colorScale = d3.scale.quantize()
+					.domain([0,num_countries])
+					.range(colors);
+
+	d3.select("#graph").remove();
+
+	var canvas = d3.select('.selection-box')
+					.append('svg')
+					.attr('id', 'graph')
+					.attr({'x': 1000, 'y': 10})
+					.attr({'width':200,'height':900});
+
+	//add mouseover for bars
+	var chart = canvas.append('g')
+				.attr('x', 20)
+				.attr('id', 'bars')
+				.selectAll('rect')
+				.data(d3.keys(country_data))
+				.enter()
+				.append('rect')
+				.attr('height', 20)
+				.attr({'x':100, 'y':function(d,i) {
+					if (regions_with_countries[region].indexOf(d) > -1) {
+						return yscale(regions_with_countries[region].indexOf(d)) + 30 + regions_with_countries[region].indexOf(d)*30; 
+					}
+				}})
+				.style('fill', function(d, i) {return colorScale(i);})
+				.attr('width', function(d) {
+					if (regions_with_countries[region].indexOf(d) > -1) {
+						return xscale(country_data[d])
+					}
+				})
+				// .on("mouseover", function(d) {
+				// 	console.log(country_data[d]);
+				// })
+				.on("click", function(d) {
+					console.log(d)
+				}); 
+
+	var y_pos;
+	var transitext = d3.select('#bars')
+						.selectAll('text')
+						.data(d3.keys(country_data))
+						.enter()
+						.append('text')
+						.attr({'x':function(d) {
+							if (regions_with_countries[region].indexOf(d) > -1) { //x coord of text
+								return d-200; 
+							}
+						},'y':function(d,i) { 
+							if (regions_with_countries[region].indexOf(d) > -1) { 
+								return yscale(regions_with_countries[region].indexOf(d)) + 44 + regions_with_countries[region].indexOf(d)*30; 
+							}
+						}})
+						.text(function(d) { 
+							if (regions_with_countries[region].indexOf(d) > -1) {
+								return d; 
+							}
+						}).style({'fill':'black','font-size':'14px'})
+						.on("click", function(d) {
+							console.log(d)
+						});
+}
+
+
+//put these inside another function, on ready state etc IF TIME
+$.getJSON( "../data/data.json", function(json) {
+ 	display_posters(json);
+ 	$.getJSON("../data/country_data.json", function(json) {
+ 		build_buttons(json);
+ 	});
+});
+
+
     //make absolute relative to page so it scrolls with user
     //images: scrolling within div, make border
     //filter by country
@@ -170,152 +266,6 @@ function callback(data, country) {
 // 	d.style.position = "absolute";
 // d.style.left = x_pos;
 // d.style.top = y_pos;
-}
-
-//position at static location
-//DIV POSITIONING
-//STATIC POSITIONING
-function build_buttons(country_data) {	
-	// var w = window,
-	//     d = document,
-	//     e = d.documentElement,
-	//     g = d.getElementsByTagName('body')[0],
-	//     x = w.innerWidth || e.clientWidth || g.clientWidth,
- //    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-
- // var svg = d3.select("body")
- // 	.append("navbox")
- // 	.attr({'x': 0, 'y': 10})
- // 	.attr("width", 1000)
- // 	.attr("height", 2000);
-
-
-
-
-
-	// d3.select(".selection-box").selectAll("input")
-	// 		.data(regions)
-	// 		.enter()
-	// 		.append("input")
-	// 		.attr("type","button")
-	// 		.attr("class","button")
-	// 		// .attr({'x': function(d, i) {
-	// 		// 	return i + 100; 
-	// 		// }, 'y': function (d, i) {
-	// 		// 	return i + 1000;
-	// 		// }})
-	// 		.attr("value", function (d) {return d;} )
-	// 		.on("click", function () { 
-	// 			display_countries(country_data, this.value);
-	// 		});
-
-
-	d3.selectAll("button")
-		//.style("visibility", "visible")
-		.on("click", function() {
-			console.log(this.value);
-		});
-
-			// var canvas = d3.select('#wrapper')
-			// 			.append('svg')
-			// 			.attr({'width':1300,'height':800});
-
-}
-
-
-//fix font and colors - sizes a little smaller to fit all of asia
-//static buttons - all rendering issues with country section fixed tonight
-//divs in own regions - fix poster rendering issue
-//add poster images
-//onclick to each bar graph element which calls films render function
-//start out with all films displaying
-//button to go back to all films
-function display_countries(country_data, region) {
-	var num_countries = regions_with_countries[region].length;
-	console.log(num_countries);
-
-				//.filter(regions_with_countries[region].indexOf(d) > -1);
-
-		// var grid = d3.range(25).map(function(i){
-		// 	return {'x1':0,'y1':0,'x2':0,'y2':480};
-		// });
-
-		//xscale - max and with filter
-		//yscale - takes in i, replace with own function, domain is size of region
-
-		var xscale = d3.scale.linear()
-						.domain([0,100])
-						.range([0,722]);
-
-		var yscale = d3.scale.linear()
-						.domain([0,200]) //multiple by num_countries
-						.range([0,700]);
-
-		var colorScale = d3.scale.quantize()
-						.domain([0,num_countries])
-						.range(colors);
-
-		d3.select("svg").remove();
-
-		var canvas = d3.select('body')
-						.append('svg')
-						.attr({'x': 1000, 'y': 10})
-						.attr({'width':1300,'height':800});
-
-		//add mouseover for bars
-		var chart = canvas.append('g')
-					.attr('x', 20)
-					.attr("transform", "translate(950,0)")
-					.attr('id', 'bars')
-					.selectAll('rect')
-					.data(d3.keys(country_data))
-					.enter()
-					.append('rect')
-					.attr('height', 20)
-					.attr({'x':100, 'y':function(d,i) {
-						if (regions_with_countries[region].indexOf(d) > -1) {
-							return yscale(regions_with_countries[region].indexOf(d)) + 30 + regions_with_countries[region].indexOf(d)*30; 
-						}
-					}})
-					.style('fill', function(d, i) {return colorScale(i);})
-					.attr('width', function(d) {
-						if (regions_with_countries[region].indexOf(d) > -1) {
-							return xscale(country_data[d])
-						}
-					}); 
-
-		var y_pos;
-		var transitext = d3.select('#bars')
-							.selectAll('text')
-							.data(d3.keys(country_data))
-							.enter()
-							.append('text')
-							.attr({'x':function(d) {
-								if (regions_with_countries[region].indexOf(d) > -1) { //x coord of text
-									return d-200; 
-								}
-							},'y':function(d,i) { 
-								if (regions_with_countries[region].indexOf(d) > -1) { 
-									return yscale(regions_with_countries[region].indexOf(d)) + 44 + regions_with_countries[region].indexOf(d)*30; 
-								}
-							}})
-							.text(function(d) { 
-								if (regions_with_countries[region].indexOf(d) > -1) {
-									return d; 
-								}
-							}).style({'fill':'black','font-size':'14px'});
-}
-
-
-//put these inside another function, on ready state etc IF TIME
-$.getJSON( "../data/small_data.json", function(json) {
- 	callback(json, "all");
-});
-
-// $.getJSON("../data/country_data.json", function(json) {
-// 	build_buttons(json);
-// });
-
 // function getData() {
 
 // // 	var request = new XMLHttpRequest();
