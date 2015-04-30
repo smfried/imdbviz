@@ -1,8 +1,35 @@
+//thurs:
+/*
+1. image sizing and parameters (country and date) - default to entire screen for now, layer selection box on top
+--divide browser size (check this) by number of films
+(1a. make floating box)
+2. Fix button positions / mouseover for graph to show numbers / button backgrounds / 
+3. Implement on click to show films (non-ugly rendering if time)
+3. If time, mouseover on each poster
+4. Add show all button to go back to start state
+
+intro/scroll down and intro disappears - how to do this
+definitely write intro with some data analysis and observations about countries
+US bias undoubtedly because IMDB is US-based? or is IMDB comprehensive, and the US makes the most movies (probably both but check)
+discuss a few examples
+
+if time:
+-floating selection box to choose region, country, date with show and hide options
+(online)
+
+intro -> scroll -> all films/box open -> option to close box
+
+no map/no multiple countries
+
+*/
+
 
 
 var data; //save this?
-var start_x = -20;
-var start_y = 10;
+var start_x = 0;
+var start_y = 0;
+
+//size of biggest region list, then mod
 var colors = ['#0000b4','#0082ca','#0094ff','#0d4bcf','#0066AE','#074285','#00187B','#285964','#405F83','#416545','#4D7069','#6E9985','#7EBC89','#0283AF','#79BCBF','#99C19E'];
 
 
@@ -29,8 +56,6 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 						"Cuba", "Dominican Republic", "Haiti", "Puerto Rico"];
 
 
-//globals for poster sizes
-//country - will need to change count per year in country_data json
 
 /*
 -import files and ajax request them 
@@ -60,13 +85,18 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 function set_location(data) {
 	var x_space = 0;
 	var y_space = 0;
+	var films_per_row = 41;
+
+	var x_margin = 30;
+	var y_margin = 50;
+
     for(var i=0;i<data.length;i++){
 		if (data[i].image[0]) {
-			data[i].x = start_x + (140 * x_space);
+			data[i].x = start_x + (x_margin * x_space);
 			//change this to account for browser size
-			data[i].y = start_y + (200 * y_space);
+			data[i].y = start_y + (y_margin * y_space);
 			x_space++;
-			if (x_space % 5 == 0) {
+			if (x_space % films_per_row == 0) {
 				x_space = 0;
 				y_space++;
 			}
@@ -76,11 +106,15 @@ function set_location(data) {
 	return data;
 }
 
-//this should call other functions
-//add onload to make less ugly
-//country panel/map 
-//smaller posters/
-function callback(data) {
+//only showing 800 films.. automatic scrolling? 
+//2. display films by country - test with US, then with laos, etc
+//3. display films by date - test with several years
+//4. mouseover/animation - main film gets bigger, other films squish down into black lines, then squish back up
+		// or film just gets bigger and others stay behind it if that looks ok
+//5. add floaty box
+
+//put in div and pad
+function callback(data, country, date) {
  	data = set_location(data);
 
 	var w = window,
@@ -95,11 +129,9 @@ function callback(data) {
 
 	var svg = d3.select("body")
 		.append("svg")
-		.attr("width", x*.85)
-		.attr("height", y);
+		.attr("width", x)
+		.attr("height", 2800);
 
-
-	//need to space images - function? 
     var imgs = d3.select("svg").selectAll("image")
     	.data(data)
     	.enter()
@@ -107,24 +139,21 @@ function callback(data) {
     	.attr("xlink:href", function (d) { return d.image ; })
     	.attr("x", function (d) { return d.x; }) 
     	.attr("y", function (d) { return d.y; })
-    	.attr("width", "200")
-    	.attr("height", "200");
+    	.attr("width", "50")
+    	.attr("height", "50");
 
     //add mouseover/click to show data - title, director, year
-
-
 
 	//mouseover images * - change size, move other images - or just tooltip showing info? depends on size
 	//mouseover show title, director, year
 	//click images and show info *
 	//make div with images into a view
 	//scale to fit according to location/date - d3 filter function
-}
 
-//put this in a div and format
-//create div, make bar graph
-//implement click to only show that country / back to all countries
-//add map
+// 	d.style.position = "absolute";
+// d.style.left = x_pos;
+// d.style.top = y_pos;
+}
 
 //position at static location
 //DIV POSITIONING
@@ -139,9 +168,9 @@ function build_buttons(country_data) {
 
 	var svg = d3.select("body")
 		.append("navbox")
-		.attr({'x': x*.95, 'y': - 1000})
-		.attr("width", x*.85)
-		.attr("height", y);
+		.attr({'x': 0, 'y': 10})
+		.attr("width", 1000)
+		.attr("height", 2000);
 
 	d3.select("navbox").selectAll("input")
 			.data(regions)
@@ -149,22 +178,24 @@ function build_buttons(country_data) {
 			.append("input")
 			.attr("type","button")
 			.attr("class","button")
-			.attr({'x': 10, 'y': function (d, i) {
-				return i + 100
-			}})
+			// .attr({'x': function(d, i) {
+			// 	return i + 100; 
+			// }, 'y': function (d, i) {
+			// 	return i + 1000;
+			// }})
 			.attr("value", function (d) {return d;} )
 			.on("click", function () { 
 				display_countries(country_data, this.value);
 			});
 
-			var canvas = d3.select('#wrapper')
-						.append('svg')
-						.attr({'width':1300,'height':800});
+			// var canvas = d3.select('#wrapper')
+			// 			.append('svg')
+			// 			.attr({'width':1300,'height':800});
 
 }
 
-//fix spacing and sizing
-//fix font and colors
+
+//fix font and colors - sizes a little smaller to fit all of asia
 //static buttons - all rendering issues with country section fixed tonight
 //divs in own regions - fix poster rendering issue
 //add poster images
@@ -200,6 +231,7 @@ function display_countries(country_data, region) {
 
 		var canvas = d3.select('body')
 						.append('svg')
+						.attr({'x': 1000, 'y': 10})
 						.attr({'width':1300,'height':800});
 
 		//add mouseover for bars
@@ -249,15 +281,15 @@ function display_countries(country_data, region) {
 							}).style({'fill':'black','font-size':'14px'});
 }
 
-$.getJSON( "../data/small_data.json", function(json) {
- 	//callback(json); 
+
+//put these inside another function, on ready state etc IF TIME
+$.getJSON( "../data/data.json", function(json) {
+ 	callback(json, "all", "all"); //NEED TO FIX RENDERING ISSUE****
 });
 
 $.getJSON("../data/country_data.json", function(json) {
-	build_buttons(json);
-	//drawMap();
+	//build_buttons(json);
 });
-
 
 // function getData() {
 
@@ -277,7 +309,6 @@ client.onreadystatechange = function() {
 client.send();
 
 //fix formatting/div locations
-//countries with one film not showing up
 //mouseover/mouseout between graph and posters
 //sizing of posters/displaying all poster
 //size based on number of posters
