@@ -1,4 +1,5 @@
 
+
 var data; //save this?
 var start_x = -20;
 var start_y = 10;
@@ -82,13 +83,20 @@ function set_location(data) {
 function callback(data) {
  	data = set_location(data);
 
+	var w = window,
+	    d = document,
+	    e = d.documentElement,
+	    g = d.getElementsByTagName('body')[0],
+	    x = w.innerWidth || e.clientWidth || g.clientWidth,
+    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
  	var min_year = d3.min(data, function(d) {return d.year[0]; });
  	var max_year = d3.max(data, function(d) {return d.year[0]; });
 
 	var svg = d3.select("body")
 		.append("svg")
-		.attr("width", 2000)	//get size of browser? 
-		.attr("height", 1000);
+		.attr("width", x*.85)
+		.attr("height", y);
 
 
 	//need to space images - function? 
@@ -120,35 +128,68 @@ function callback(data) {
 
 //position at static location
 //DIV POSITIONING
+//STATIC POSITIONING
 function build_buttons(country_data) {	
-	d3.select("body").selectAll("input")
+	var w = window,
+	    d = document,
+	    e = d.documentElement,
+	    g = d.getElementsByTagName('body')[0],
+	    x = w.innerWidth || e.clientWidth || g.clientWidth,
+    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
+	var svg = d3.select("body")
+		.append("navbox")
+		.attr({'x': x*.95, 'y': - 1000})
+		.attr("width", x*.85)
+		.attr("height", y);
+
+	d3.select("navbox").selectAll("input")
 			.data(regions)
 			.enter()
 			.append("input")
 			.attr("type","button")
 			.attr("class","button")
+			.attr({'x': 10, 'y': function (d, i) {
+				return i + 100
+			}})
 			.attr("value", function (d) {return d;} )
 			.on("click", function () { 
 				display_countries(country_data, this.value);
 			});
 
+			var canvas = d3.select('#wrapper')
+						.append('svg')
+						.attr({'width':1300,'height':800});
+
 }
 
-//this needs to redraw every time
+//fix spacing and sizing
+//fix font and colors
+//static buttons - all rendering issues with country section fixed tonight
+//divs in own regions - fix poster rendering issue
+//add poster images
+//onclick to each bar graph element which calls films render function
+//start out with all films displaying
+//button to go back to all films
 function display_countries(country_data, region) {
-	var num_countries = Object.keys(country_data).length;
-	var num_regions = Object.keys(regions_with_countries).length;
+	var num_countries = regions_with_countries[region].length;
+	console.log(num_countries);
 
-		var grid = d3.range(25).map(function(i){
-			return {'x1':0,'y1':0,'x2':0,'y2':480};
-		});
+				//.filter(regions_with_countries[region].indexOf(d) > -1);
+
+		// var grid = d3.range(25).map(function(i){
+		// 	return {'x1':0,'y1':0,'x2':0,'y2':480};
+		// });
+
+		//xscale - max and with filter
+		//yscale - takes in i, replace with own function, domain is size of region
 
 		var xscale = d3.scale.linear()
-						.domain([1,1784])
+						.domain([0,100])
 						.range([0,722]);
 
 		var yscale = d3.scale.linear()
-						.domain([0,240])
+						.domain([0,200]) //multiple by num_countries
 						.range([0,700]);
 
 		var colorScale = d3.scale.quantize()
@@ -157,10 +198,11 @@ function display_countries(country_data, region) {
 
 		d3.select("svg").remove();
 
-		var canvas = d3.select('#wrapper')
+		var canvas = d3.select('body')
 						.append('svg')
 						.attr({'width':1300,'height':800});
 
+		//add mouseover for bars
 		var chart = canvas.append('g')
 					.attr('x', 20)
 					.attr("transform", "translate(950,0)")
@@ -169,10 +211,12 @@ function display_countries(country_data, region) {
 					.data(d3.keys(country_data))
 					.enter()
 					.append('rect')
-					.attr('height', 2)
+					.attr('height', 20)
 					.attr({'x':100, 'y':function(d,i) {
 						if (regions_with_countries[region].indexOf(d) > -1) {
-							return yscale(i)+40; 
+							return yscale(regions_with_countries[region].indexOf(d)) + 30 + regions_with_countries[region].indexOf(d)*30; 
+
+							//return yscale(i)+40; //same as below to fix? yup, no more i
 						}
 					}})
 					.style('fill', function(d, i) {return colorScale(i);})
@@ -180,38 +224,29 @@ function display_countries(country_data, region) {
 						if (regions_with_countries[region].indexOf(d) > -1) {
 							return xscale(country_data[d])
 						}
-					}); //new scale function
+					}); 
 
-
+		var y_pos;
 		var transitext = d3.select('#bars')
 							.selectAll('text')
 							.data(d3.keys(country_data))
 							.enter()
 							.append('text')
 							.attr({'x':function(d) {
-								if (regions_with_countries[region].indexOf(d) > -1) {
+								if (regions_with_countries[region].indexOf(d) > -1) { //x coord of text
 									return d-200; 
 								}
 							},'y':function(d,i) { 
-								if (regions_with_countries[region].indexOf(d) > -1) {
-									return yscale(i) + 42; 
+								if (regions_with_countries[region].indexOf(d) > -1) { //ycoord of text - need to fix this
+										//get index in region array and space accordingly, find matching 
+									return yscale(regions_with_countries[region].indexOf(d)) + 44 + regions_with_countries[region].indexOf(d)*30; 
 								}
 							}})
 							.text(function(d) { 
 								if (regions_with_countries[region].indexOf(d) > -1) {
 									return d; 
 								}
-							}).style({'fill':'black','font-size':'9px'});
-		//2 columns, fix spacing, fix colors
-		//scrolls with floating bar graph
-
-		//select by region and then select by country
-
-		//fix positioning so divs go next to each other
-
-	//map
-
-
+							}).style({'fill':'black','font-size':'14px'});
 }
 
 $.getJSON( "../data/small_data.json", function(json) {
