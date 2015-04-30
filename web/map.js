@@ -3,15 +3,23 @@
 
 GET RID OF OPACITY
 mouseover for graph to show numbers 
-1. click to show films (non-ugly rendering if time) - re-render function
+
+1. click to show films (non-ugly -transition function?)
+scale
+styling
+
 2. click on film
+
 3. graph scaling and design/colors
 
 (3. button backgrounds - make buttons pop / collapse css button)
-4. Click on poster
+
 5. Add show all button to go back to start state
 
-if time, general highlight box to click on graph and display films / zooming
+after click, mouseover animation
+then opacity/hide
+
+if time, general highlight box to click on graph and display films and highlight on mouseover / zooming
 
 intro/scroll down and intro disappears - how to do this
 definitely write intro with some data analysis and observations about countries
@@ -20,10 +28,12 @@ discuss a few examples
 
 intro -> scroll -> all films/box open -> option to close box
 
+writing/phrasing
+
 no map/no multiple countries
 
 */
-
+var data;
 var start_x = 0;
 var start_y = 0;
 
@@ -111,41 +121,55 @@ function set_location(data) {
 
 //scroll down from intro and stay there- on scroll hide textbox - or hide button, but if scroll back up see text
 
-//pass in array of country options
-function display_posters(data) {
- 	data = set_location(data);
+//just one country
+function display_posters(data, country) {
+	//if(country=="all") {
+	 	data = set_location(data);
 
-	var w = window,
-	    d = document,
-	    e = d.documentElement,
-	    g = d.getElementsByTagName('body')[0],
-	    x = w.innerWidth || e.clientWidth || g.clientWidth,
-    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+	 	d3.select("#posters").remove();
 
- 	var min_year = d3.min(data, function(d) {return d.year[0]; });
- 	var max_year = d3.max(data, function(d) {return d.year[0]; });
+		var w = window,
+		    d = document,
+		    e = d.documentElement,
+		    g = d.getElementsByTagName('body')[0],
+		    x = w.innerWidth || e.clientWidth || g.clientWidth,
+	    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-	var svg = d3.select("body")
-		.append("svg")
-		.attr('id', 'posters')
-		.attr("width", x)
-		.attr("height", 2800);
+	 	var min_year = d3.min(data, function(d) {return d.year[0]; });
+	 	var max_year = d3.max(data, function(d) {return d.year[0]; });
 
-    var imgs = d3.select("svg").selectAll("image")
-    	.data(data)
-    	.enter()
-    	.append("svg:image")
-    	.attr("xlink:href", function (d) { return d.image ; })
-    	.attr("x", function (d) { return d.x; }) 
-    	.attr("y", function (d) { return d.y; })
-    	.attr("width", "50")
-    	.attr("height", "50");
+		var svg = d3.select("body")
+			.append("svg")
+			.attr('id', 'posters')
+			.attr("width", x)
+			.attr("height", 2800);
 
-    d3.select(".selection-box").style("background", "grey"); 
-    				//.on("click", )	//hide and show
+	    var imgs = d3.select("svg").selectAll("image")
+	    	.data(data)
+	    	.enter()
+	    	.append("svg:image")
+	    	.attr("xlink:href", function (d) { 
+	    		if (country == "all") 
+	    			return d.image ; 
+	    		// } else {
+	    		// 	if (d)	//if is in list of countries for image, return image - might not need this, then add param to set_loc
+	    		// }
+	    	})
+	    	.attr("x", function (d) { return d.x; }) 
+	    	.attr("y", function (d) { return d.y; })
+	    	.attr("width", "50")
+	    	.attr("height", "50")
+	    	.on("mouseover", function (d) {
+	    		var sel = d3.select(this);
+	    		this.parentNode.appendChild(this);
+	    		sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); //.transition(); //100, 25 looks good
+	    	})
+	    	.on("mouseout", function(d) {
+	    	  	d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
+	    	});
 
-    d3.selectAll("button").style("visibility", "visible");
-    			//.style("background-color", "red");
+	    //add onlick for each image, create onclick function
+	//}
 }
 
 function build_buttons(country_data) {	
@@ -211,7 +235,7 @@ function display_countries(country_data, region) {
 				// 	console.log(country_data[d]);
 				// })
 				.on("click", function(d) {
-					console.log(d)
+					console.log(d);
 				}); 
 
 	var y_pos;
@@ -242,7 +266,10 @@ function display_countries(country_data, region) {
 
 //put these inside another function, on ready state etc IF TIME
 $.getJSON( "../data/data.json", function(json) {
- 	display_posters(json);
+ 	display_posters(json, "all");
+ 	d3.select(".selection-box").style("background", "grey");  //.on("click", )	//hide and show
+ 	d3.selectAll("button").style("visibility", "visible");
+
  	$.getJSON("../data/country_data.json", function(json) {
  		build_buttons(json);
  	});
