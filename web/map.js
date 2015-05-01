@@ -1,14 +1,10 @@
 /*
-essential: 
 -change title etc to relative position
 -fix first title
 
-non-essential:
 -add all directors
 -fix font/design
 -make box scroll down
-
-add go back to all button
 
 -fix corner cases
 -mark which country was selected
