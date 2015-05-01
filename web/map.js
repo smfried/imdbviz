@@ -3,12 +3,10 @@
 GET RID OF OPACITY
 mouseover for graph to show numbers 
 
--click on graph to show films (non-ugly -transition function?) - add other div, fix - select country and then filter button, 
-then can be list of countries to pass in, 
-build count, use count for render function
--scale on graphs
+-fix sizing, do click
+-scale on graphs, axis on bottom
 -styling
--click on film
+-go back to all button
 
 color palette and spacing
 
@@ -82,13 +80,19 @@ function set_location(country) {
 	var start_y = 0;
 	var x_space = 0;
 	var y_space = 0;
-	var films_per_row = 32;
 
-	var x_margin = 30;
-	var y_margin = 50;
+	if(country == "all" || country == "USA") {
+		var films_per_row = 32;
+		var x_margin = 30;
+		var y_margin = 50;
+	} else {
+		var films_per_row = 8;
+		var x_margin = 150;
+		var y_margin = 210;		//TODO - same size as with mouseover
+	}
 
     for(var i=0;i<imdb_data.length;i++){
-		if (imdb_data[i].image[0]) { 	//&& data[i].country[0] && data[i].country[0] == "Laos" - not working, need to change coords as well
+		if (imdb_data[i].image[0]) { 
 			if (country == "all") {
 				imdb_data[i].x = start_x + (x_margin * x_space);
 				//change this to account for browser size
@@ -99,7 +103,7 @@ function set_location(country) {
 					y_space++;
 				}
 			} else if (imdb_data[i].country.indexOf(country) > -1) {
-				imdb_data[i].x = start_x + (x_margin * x_space);
+				imdb_data[i].x = start_x + (x_margin * x_space) - 30;
 				//change this to account for browser size
 				imdb_data[i].y = start_y + (y_margin * y_space);
 				x_space++;
@@ -150,15 +154,31 @@ function display_posters(country) {
     	})
     	.attr("x", function (d) { return d.x; }) 
     	.attr("y", function (d) { return d.y; })
-    	.attr("width", "50")
-    	.attr("height", "50")
+    	.attr("width", function () {
+    		if (country == "all" || country== "USA") {
+    			return 50;
+    		} else {
+    			return 225;
+    		}
+    	})
+    	.attr("height", function () {
+    		if (country == "all" || country == "USA") {
+    			return 50;
+    		} else {
+    			return 225;
+    		}
+    	})
     	.on("mouseover", function (d) {	//need to fix for edge cases
-    		var sel = d3.select(this);
-    		this.parentNode.appendChild(this);
-    		sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); //.transition(); //100, 25 looks good
+    		if (country == "all" || country == "USA") {
+    			var sel = d3.select(this);
+    			this.parentNode.appendChild(this);
+    			sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); //.transition(); //100, 25 looks good - 300 for zoom
+    		}
     	})
     	.on("mouseout", function(d) {
-    	  	d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
+    		if (country == "all" || country == "USA") {
+    	  		d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
+    	  	}
     	});
 
 	    //add onlick for each image, create onclick function
@@ -257,7 +277,7 @@ function display_countries(country_data, region) {
 //put these inside another function, on ready state etc IF TIME
 $.getJSON( "../data/data.json", function(json) {
 	imdb_data = json;
- 	display_posters("all");
+ 	display_posters("Mexico");
  	d3.select(".selection-box").style("background", "grey");  //.on("click", )	//hide and show
  	d3.selectAll("button").style("visibility", "visible");
 

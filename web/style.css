@@ -17,6 +17,13 @@
     margin-left: 1000px;
 }
 
+.info-box {
+    display: table;
+    background: white;
+    width: 300px;
+    height: 300px;
+}
+
 button {
     color: black;
     font-size: 7pt; 
