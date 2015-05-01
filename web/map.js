@@ -209,15 +209,6 @@ function build_buttons(country_data) {
 //button to go back to all films
 function display_countries(country_data, region) {
 	var num_countries = regions_with_countries[region].length;
-	//console.log(num_countries);
-	// .on("click", function () {
-	// 	console.log("test");
-	// 	d3.select(this).attr("opacity", "0.0");
-	// 	//d3.select(this).attr("width", 50).attr("height", 50).attr("x", 1200);
-	// });  //.on("click", )	//hide and show
-
-	//xscale - max and with filter
-	//yscale - takes in i, replace with own function, domain is size of region
 
 	var max = region_max[region];
 
@@ -320,46 +311,3 @@ $.getJSON( "../data/data.json", function(json) {
  	});
 });
 
-
-    //make absolute relative to page so it scrolls with user
-    //images: scrolling within div, make border
-    //filter by country
-
-    //click - grow out of center, animation - or get dark and appear in center, click outside to go back
-
-    //add mouseover/click to show data - title, director, year
-
-	//mouseover images * - change size, move other images - or just tooltip showing info? depends on size
-	//mouseover show title, director, year
-	//click images and show info *
-	//make div with images into a view
-	//scale to fit according to location/date - d3 filter function
-
-// 	d.style.position = "absolute";
-// d.style.left = x_pos;
-// d.style.top = y_pos;
-// function getData() {
-
-// // 	var request = new XMLHttpRequest();
-// // 	request.open("GET", "../data/data.json", false);
-// // 	request.send(null)
-// // 	var my_JSON_object = JSON.parse(request.responseText);
-// // 	alert (my_JSON_object.result[0]);
-// }
-
-/*
-var client = new XMLHttpRequest();
-client.open('GET', '/foo.txt');
-client.onreadystatechange = function() {
-  alert(client.responseText);
-}
-client.send();
-
-//fix formatting/div locations
-//mouseover/mouseout between graph and posters
-//sizing of posters/displaying all poster
-//size based on number of posters
-
-//small map
-//dateslider later
-*/
