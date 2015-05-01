@@ -7,15 +7,19 @@
     margin-left: 1000px;
 }
 
-#text-container {
-    width: 2px;
-    height: 200px;
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
 }
 
 .selection-box {
     display: table;
     width: 250px;
-    height: 1200px;
+    height: 4000px;
     background: white;
     position: absolute;
     margin-left: 1000px;

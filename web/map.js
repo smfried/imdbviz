@@ -1,12 +1,11 @@
 /*
 essential: 
--text issue on graphs
--
+-change title etc to relative position
+-fix first title
 
+non-essential:
 -add all directors
-
 -fix font/design
-
 -make box scroll down
 
 add go back to all button
@@ -188,9 +187,8 @@ function display_posters(country) {
 
     		if (country == "all" || country == "USA") {
     			//.transition(); //175, 30
-    			sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); 
+    			//sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); 
     		} else {
-    			if (d.x >= 10 && d.y >= 10)
     			sel.attr("width", 235).attr("height", 235).attr("x", d.x - 3).attr("y", d.y - 3)
     		}
     	})
@@ -204,6 +202,17 @@ function display_posters(country) {
     	  		d3.select(this).attr("width", 225).attr("height", 225).attr("x", d.x).attr("y", d.y);
     	  	}
     	});
+
+    	/*				.on("mouseover", function(d){
+					return tooltip.text(country_data[d]).style("visibility", "visible");
+				})
+				.on("mousemove", function(d){
+					return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+				})
+				.on("mouseout", function(d){
+					return tooltip.style("visibility", "hidden");
+				})
+		*/
 }
 
 function build_buttons(country_data) {	
@@ -232,7 +241,7 @@ function display_countries(country_data, region) {
 
 	var yscale = d3.scale.linear()
 					.domain([0,num_countries])
-					.range([0,num_countries*5]);
+					.range([0,num_countries*4]);
 
 	d3.select("#graph").remove();
 
@@ -240,7 +249,7 @@ function display_countries(country_data, region) {
 					.append('svg')
 					.attr('id', 'graph')
 					.attr({'x': 1000, 'y': 10})
-					.attr({'width':200,'height':900});
+					.attr({'width':200,'height':1200});
 
 	//add mouseover for bars
 	var chart = canvas.append('g')
@@ -311,7 +320,7 @@ function display_countries(country_data, region) {
 
 $.getJSON( "../data/data.json", function(json) {
 	imdb_data = json;
- 	display_posters("Cuba");
+ 	display_posters("all");
  	d3.select(".selection-box").style("background", "grey");
  	d3.selectAll("button").style("visibility", "visible");
  	d3.select("#title").style("visibility", "visible");
