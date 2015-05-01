@@ -7,6 +7,11 @@
     margin-left: 1000px;
 }
 
+#text-container {
+    width: 2px;
+    height: 200px;
+}
+
 .selection-box {
     display: table;
     width: 250px;

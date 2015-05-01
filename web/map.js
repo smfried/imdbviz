@@ -1,24 +1,15 @@
 //thurs:
 /*
 
-fix graphs ? buttons for each country
+essential: 
+-click on poster and show data - also can be tooltip
+-fix text issue
+
 on click show title/director/year in side box (replace graphs)
 add go back to all button
 
-graph scaling, 
--scale on graphs, axis on bottom
--styling on graph/show and hide button - collapse
--go back to all button
-
 -fix corner cases
-
--animate graph, border on mouseover of bar
-
-mark which country was selected
-
-color palette and spacing
-
-3. graph scaling and design/colors
+-mark which country was selected
 
 (3. button backgrounds - make buttons pop / collapse css button)
 
@@ -44,8 +35,6 @@ films over time
 */
 var imdb_data;
 var GLOBAL_COUNTRY = "all";
-
-//size of biggest region list, then mod
 var colors = ['#0000b4','#0082ca','#0094ff','#0d4bcf','#0066AE','#074285','#00187B','#285964','#405F83','#416545','#4D7069','#6E9985','#7EBC89','#0283AF','#79BCBF','#99C19E'];
 
 
@@ -81,32 +70,44 @@ function set_location(country) {
 	var y_space = 0;
 
 	if(country == "all" || country == "USA") {
-		var films_per_row = 41;		//32?
+		var films_per_row = 33;		//41
 		var x_margin = 30;
 		var y_margin = 50;
 	} else {
-		var films_per_row = 8;
-		var x_margin = 150;
-		var y_margin = 220;
+		var films_per_row = 7;
+		var x_margin = 140; //150
+		var y_margin = 225; //220
 	}
 
     for(var i=0;i<imdb_data.length;i++){
 		if (imdb_data[i].image[0]) { 
 			if (country == "all") {
-				imdb_data[i].x = start_x + (x_margin * x_space);
+				imdb_data[i].x = start_x + (x_margin * x_space) - 10;
 				imdb_data[i].y = start_y + (y_margin * y_space);
 				x_space++;
 				if (x_space % films_per_row == 0) {
 					x_space = 0;
 					y_space++;
 				}
-			} else if (imdb_data[i].country.indexOf(country) > -1) {
-				imdb_data[i].x = start_x + (x_margin * x_space) - 30;
-				imdb_data[i].y = start_y + (y_margin * y_space);
-				x_space++;
-				if (x_space % films_per_row == 0) {
-					x_space = 0;
-					y_space++;
+			} else if (country == "USA") {
+				if (imdb_data[i].country.indexOf(country) > -1) {
+					imdb_data[i].x = start_x + (x_margin * x_space) - 10;
+					imdb_data[i].y = start_y + (y_margin * y_space);
+					x_space++;
+					if (x_space % films_per_row == 0) {
+						x_space = 0;
+						y_space++;
+					}
+				}
+			} else {
+					if (imdb_data[i].country.indexOf(country) > -1) {
+					imdb_data[i].x = start_x + (x_margin * x_space) - 30;
+					imdb_data[i].y = start_y + (y_margin * y_space);
+					x_space++;
+					if (x_space % films_per_row == 0) {
+						x_space = 0;
+						y_space++;
+					}
 				}
 			} 	//need else if for USA
 		}
@@ -186,6 +187,17 @@ function display_posters(country) {
     	  		d3.select(this).attr("width", 225).attr("height", 225).attr("x", d.x).attr("y", d.y);
     	  	}
     	});
+
+    	// .on("mouseover", function(d){
+    	// 	return tooltip.text(country_data[d]).style("visibility", "visible");
+    	// })
+    	// .on("mousemove", function(d){
+    	// 	return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+    	// })
+    	// .on("mouseout", function(d){
+    	// 	return tooltip.style("visibility", "hidden");
+    	// });
+
     	// .on("click", function(d) {
     	// 	var sel = d3.select(this);
     	// 	//  -webkit-transform: rotatex(-180deg);
@@ -231,10 +243,17 @@ function display_countries(country_data, region) {
 	//yscale - takes in i, replace with own function, domain is size of region
 
 	var max = region_max[region];
-	console.log(max);
+
+	var tooltip = d3.select("body")
+		.append("div")
+		.style("position", "absolute")
+		.style("z-index", "10")
+		.style("visibility", "hidden")
+		.style("font-family", "sans-serif")
+		.style("color", "white");
 
 	var xscale = d3.scale.linear()
-					.domain([0,max])
+					.domain([0,400])
 					.range([0,250]); //domain is input, range is output
 
 	var yscale = d3.scale.linear()
@@ -269,12 +288,21 @@ function display_countries(country_data, region) {
 						return xscale(country_data[d])
 					}
 				})
-				.on("mouseover", function(d) {
-					//console.log(country_data[d]);
+				.on("mouseover", function(d){
+					return tooltip.text(country_data[d]).style("visibility", "visible");
 				})
-				.on("click", function(d) {
-					display_posters(d);
-				});		 
+				.on("mousemove", function(d){
+					return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+				})
+				.on("mouseout", function(d){
+					return tooltip.style("visibility", "hidden");
+				});
+				// .on("mouseover", function(d) {
+				// 	//console.log(country_data[d]);
+				// })
+				// .on("click", function(d) {
+				// 	display_posters(d);
+				// }); 
 
 	var y_pos;
 	var transitext = d3.select('#bars')		//if too long, put on next line - get length of string js?
