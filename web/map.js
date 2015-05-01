@@ -2,8 +2,8 @@
 /*
 
 essential: 
--bug with title of first film
 -fix text issue
+-out of bounds bug
 
 -make box scroll down
 
@@ -136,7 +136,7 @@ function display_posters(country) {
 		.append("svg")
 		.attr('id', 'posters')
 		.attr("width", x)
-		.attr("height", 2800);
+		.attr("height", 4000);
 		//.attr("perspective", "800px");
 
 	//on click checking global bool here
@@ -179,7 +179,7 @@ function display_posters(country) {
     		var sel = d3.select(this);
     		this.parentNode.appendChild(this);
     		if (country == "all" || country == "USA") {
-    			sel.attr("width", 175).attr("height", 175).attr("x", d.x - 30).attr("y", d.y - 30); //.transition(); //175, 30 looks good - 300 for zoom
+    			//sel.attr("width", 175).attr("height", 175).attr("x", d.x - 30).attr("y", d.y - 30); //.transition(); //175, 30 looks good - 300 for zoom
     		} else {
     			sel.attr("width", 235).attr("height", 235).attr("x", d.x - 3).attr("y", d.y - 3)
     		}
@@ -189,7 +189,7 @@ function display_posters(country) {
     		// d3.select("#year").text("Year: ")
     		// d3.select("#director").text("Director: ")
     		if (country == "all" || country == "USA") {
-    	  		d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
+    	  		//d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
     	  	} else {
     	  		d3.select(this).attr("width", 225).attr("height", 225).attr("x", d.x).attr("y", d.y);
     	  	}
@@ -230,8 +230,8 @@ function display_countries(country_data, region) {
 		.style("color", "white");
 
 	var xscale = d3.scale.linear()
-					.domain([0,400])
-					.range([0,250]); //domain is input, range is output
+					.domain([0,max])
+					.range([0,300]); //domain is input, range is output
 
 	var yscale = d3.scale.linear()
 					.domain([0,num_countries])
@@ -305,12 +305,15 @@ function display_countries(country_data, region) {
 }
 
 
-//put these inside another function, on ready state etc IF TIME
+//put these inside another function, on ready state etc
 $.getJSON( "../data/data.json", function(json) {
 	imdb_data = json;
  	display_posters("Mexico");
  	d3.select(".selection-box").style("background", "grey");
  	d3.selectAll("button").style("visibility", "visible");
+ 	d3.select("#title").style("visibility", "visible");
+ 	d3.select("#year").style("visibility", "visible");
+ 	d3.select("#director").style("visibility", "visible");
 
  	$.getJSON("../data/country_data.json", function(json) {
  		build_buttons(json);
