@@ -66,15 +66,6 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 						"Argentina", "Brazil", "Chile", "Colombia", "Paraguay", "Peru", "Uruguay", "Venezuela",
 						"Cuba", "Dominican Republic", "Haiti", "Puerto Rico"];
 
-
-
-//TODO fix this for chrome - wrap call
-//save with callback function
-//have to save for mouseover images and click images
-
-//scale according to number of elements
-//pass in more option args
-//sizing based on width of image, get from metadata or not?
 function set_location(country) {
 	var start_x = 0;
 	var start_y = 0;
@@ -82,13 +73,13 @@ function set_location(country) {
 	var y_space = 0;
 
 	if(country == "all" || country == "USA") {
-		var films_per_row = 32;
+		var films_per_row = 32;		//41
 		var x_margin = 30;
 		var y_margin = 50;
 	} else {
 		var films_per_row = 8;
 		var x_margin = 150;
-		var y_margin = 210;		//TODO - same size as with mouseover
+		var y_margin = 210;
 	}
 
     for(var i=0;i<imdb_data.length;i++){
