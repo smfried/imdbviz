@@ -1,20 +1,22 @@
 //thurs:
 /*
-
 GET RID OF OPACITY
 mouseover for graph to show numbers 
 
-1. click to show films (non-ugly -transition function?)
-scale
-styling
+-click on graph to show films (non-ugly -transition function?) - add other div, fix - select country and then filter button, 
+then can be list of countries to pass in, 
+build count, use count for render function
+-scale on graphs
+-styling
+-click on film
 
-2. click on film
+color palette and spacing
 
 3. graph scaling and design/colors
 
 (3. button backgrounds - make buttons pop / collapse css button)
 
-5. Add show all button to go back to start state
+5. Add show all button to go back to start state / dateslider
 
 after click, mouseover animation
 then opacity/hide
@@ -32,10 +34,13 @@ writing/phrasing
 
 no map/no multiple countries
 
+count/history of violence
+
+films over time
+
 */
-var data;
-var start_x = 0;
-var start_y = 0;
+var imdb_data;
+var GLOBAL_COUNTRY = "all";
 
 //size of biggest region list, then mod
 var colors = ['#0000b4','#0082ca','#0094ff','#0d4bcf','#0066AE','#074285','#00187B','#285964','#405F83','#416545','#4D7069','#6E9985','#7EBC89','#0283AF','#79BCBF','#99C19E'];
@@ -65,22 +70,6 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 
 
 
-/*
--import files and ajax request them 
--display images by decade
--group by country? how to do this?
-
--map/count on mouseover
--dateslider at bottom
-
--mouseover: show title/director/year
-
--look at how many films per year/history of violence? 
-
-*/
-
-//prelim mouseover, click
-
 //TODO fix this for chrome - wrap call
 //save with callback function
 //have to save for mouseover images and click images
@@ -88,7 +77,9 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 //scale according to number of elements
 //pass in more option args
 //sizing based on width of image, get from metadata or not?
-function set_location(data) {
+function set_location(country) {
+	var start_x = 0;
+	var start_y = 0;
 	var x_space = 0;
 	var y_space = 0;
 	var films_per_row = 32;
@@ -96,80 +87,81 @@ function set_location(data) {
 	var x_margin = 30;
 	var y_margin = 50;
 
-    for(var i=0;i<data.length;i++){
-		if (data[i].image[0]) { 	//&& data[i].country[0] && data[i].country[0] == "Laos" - not working, need to change coords as well
-			data[i].x = start_x + (x_margin * x_space);
-			//change this to account for browser size
-			data[i].y = start_y + (y_margin * y_space);
-			x_space++;
-			if (x_space % films_per_row == 0) {
-				x_space = 0;
-				y_space++;
+    for(var i=0;i<imdb_data.length;i++){
+		if (imdb_data[i].image[0]) { 	//&& data[i].country[0] && data[i].country[0] == "Laos" - not working, need to change coords as well
+			if (country == "all") {
+				imdb_data[i].x = start_x + (x_margin * x_space);
+				//change this to account for browser size
+				imdb_data[i].y = start_y + (y_margin * y_space);
+				x_space++;
+				if (x_space % films_per_row == 0) {
+					x_space = 0;
+					y_space++;
+				}
+			} else if (imdb_data[i].country.indexOf(country) > -1) {
+				imdb_data[i].x = start_x + (x_margin * x_space);
+				//change this to account for browser size
+				imdb_data[i].y = start_y + (y_margin * y_space);
+				x_space++;
+				if (x_space % films_per_row == 0) {
+					x_space = 0;
+					y_space++;
+				}
 			}
 		}
 	}
 
-	return data;
+	return imdb_data;
 }
 
-//2. display films by country - test with US, then with laos, etc
-//4. mouseover/animation - main film gets bigger, other films squish down into black lines, then squish back up
-		// or film just gets bigger and others stay behind it if that looks ok - mouseover with title/director/year - just show year here
-//5. add country filtering, possibly year filtering 
+function display_posters(country) {
+	imdb_data = set_location(country);
 
-//more than one country at once/if checked off / making rendering look good based on number of films to render
+ 	d3.select("#posters").remove();
 
-//scroll down from intro and stay there- on scroll hide textbox - or hide button, but if scroll back up see text
+	var w = window,
+	    d = document,
+	    e = d.documentElement,
+	    g = d.getElementsByTagName('body')[0],
+	    x = w.innerWidth || e.clientWidth || g.clientWidth,
+    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-//just one country
-function display_posters(data, country) {
-	//if(country=="all") {
-	 	data = set_location(data);
+ 	var min_year = d3.min(imdb_data, function(d) {return d.year[0]; });
+ 	var max_year = d3.max(imdb_data, function(d) {return d.year[0]; });
 
-	 	d3.select("#posters").remove();
+	var svg = d3.select("body")
+		.append("svg")
+		.attr('id', 'posters')
+		.attr("width", x)
+		.attr("height", 2800);
 
-		var w = window,
-		    d = document,
-		    e = d.documentElement,
-		    g = d.getElementsByTagName('body')[0],
-		    x = w.innerWidth || e.clientWidth || g.clientWidth,
-	    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-
-	 	var min_year = d3.min(data, function(d) {return d.year[0]; });
-	 	var max_year = d3.max(data, function(d) {return d.year[0]; });
-
-		var svg = d3.select("body")
-			.append("svg")
-			.attr('id', 'posters')
-			.attr("width", x)
-			.attr("height", 2800);
-
-	    var imgs = d3.select("svg").selectAll("image")
-	    	.data(data)
-	    	.enter()
-	    	.append("svg:image")
-	    	.attr("xlink:href", function (d) { 
-	    		if (country == "all") 
-	    			return d.image ; 
-	    		// } else {
-	    		// 	if (d)	//if is in list of countries for image, return image - might not need this, then add param to set_loc
-	    		// }
-	    	})
-	    	.attr("x", function (d) { return d.x; }) 
-	    	.attr("y", function (d) { return d.y; })
-	    	.attr("width", "50")
-	    	.attr("height", "50")
-	    	.on("mouseover", function (d) {
-	    		var sel = d3.select(this);
-	    		this.parentNode.appendChild(this);
-	    		sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); //.transition(); //100, 25 looks good
-	    	})
-	    	.on("mouseout", function(d) {
-	    	  	d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
-	    	});
+    var imgs = d3.select("#posters").selectAll("image")
+    	.data(imdb_data)
+    	.enter()
+    	.append("svg:image")
+    	.attr("xlink:href", function (d) { 
+    		if (country == "all") {
+    			return d.image ; 
+    		} else {	//regions_with_countries[region].indexOf(d) > -1
+    			if (d.country.indexOf(country) > -1) {
+    				return d.image;
+    			}	//and set location
+    		}
+    	})
+    	.attr("x", function (d) { return d.x; }) 
+    	.attr("y", function (d) { return d.y; })
+    	.attr("width", "50")
+    	.attr("height", "50")
+    	.on("mouseover", function (d) {	//need to fix for edge cases
+    		var sel = d3.select(this);
+    		this.parentNode.appendChild(this);
+    		sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); //.transition(); //100, 25 looks good
+    	})
+    	.on("mouseout", function(d) {
+    	  	d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
+    	});
 
 	    //add onlick for each image, create onclick function
-	//}
 }
 
 function build_buttons(country_data) {	
@@ -186,7 +178,7 @@ function build_buttons(country_data) {
 //button to go back to all films
 function display_countries(country_data, region) {
 	var num_countries = regions_with_countries[region].length;
-	console.log(num_countries);
+	//console.log(num_countries);
 
 	//xscale - max and with filter
 	//yscale - takes in i, replace with own function, domain is size of region
@@ -199,9 +191,9 @@ function display_countries(country_data, region) {
 					.domain([0,200]) //multiple by num_countries
 					.range([0,700]);
 
-	var colorScale = d3.scale.quantize()
-					.domain([0,num_countries])
-					.range(colors);
+	// var colorScale = d3.scale.quantize()
+	// 				.domain([0,20])
+	// 				.range(colors);		//TODO
 
 	d3.select("#graph").remove();
 
@@ -225,7 +217,7 @@ function display_countries(country_data, region) {
 						return yscale(regions_with_countries[region].indexOf(d)) + 30 + regions_with_countries[region].indexOf(d)*30; 
 					}
 				}})
-				.style('fill', function(d, i) {return colorScale(i);})
+				.style('fill', function(d, i) {return colors[i % 16];})
 				.attr('width', function(d) {
 					if (regions_with_countries[region].indexOf(d) > -1) {
 						return xscale(country_data[d])
@@ -234,8 +226,9 @@ function display_countries(country_data, region) {
 				// .on("mouseover", function(d) {
 				// 	console.log(country_data[d]);
 				// })
-				.on("click", function(d) {
-					console.log(d);
+				.on("click", function(d) {	//TO DO
+					//console.log(d);
+					display_posters(d);
 				}); 
 
 	var y_pos;
@@ -257,16 +250,14 @@ function display_countries(country_data, region) {
 							if (regions_with_countries[region].indexOf(d) > -1) {
 								return d; 
 							}
-						}).style({'fill':'black','font-size':'14px'})
-						.on("click", function(d) {
-							console.log(d)
-						});
+						}).style({'fill':'black','font-size':'14px'});
 }
 
 
 //put these inside another function, on ready state etc IF TIME
 $.getJSON( "../data/data.json", function(json) {
- 	display_posters(json, "all");
+	imdb_data = json;
+ 	display_posters("all");
  	d3.select(".selection-box").style("background", "grey");  //.on("click", )	//hide and show
  	d3.selectAll("button").style("visibility", "visible");
 
