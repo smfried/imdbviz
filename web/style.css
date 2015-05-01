@@ -33,8 +33,11 @@
 }
 
 button {
-    color: black;
-    font-size: 7pt; 
+    color: #fff;
+    font-size: 9pt; 
+    background: #A30D15;
+    padding: 2px 5px;
+    margin-top: 3px;
 }
 
 #title {
@@ -42,7 +45,6 @@ button {
     margin-left: 12px;
     font-family: sans-serif;
     visibility: hidden;
-
 }
 
 #year {
@@ -58,83 +60,70 @@ button {
     margin-top: 5px;
     font-family: sans-serif;
     visibility: hidden;
+    margin-bottom: 8px;
 
 }
 
 #afr-button {
-    background-color: white;
     visibility: hidden;
     margin-left: 15px;
     margin-right: 9px;
-    margin-top: 9px;
 }
 
 #asia-button {
-    background-color: white;
     visibility: hidden;
-    margin-left: 5px;
-    margin-right: 12px;
-    margin-top: 25px;
 }
 
 #ca-button {
-    background-color: white;
     visibility: hidden;
-
+    margin-left: 10px;
 }
 
 #ee-button {
-    background-color: white;
     visibility: hidden;
     margin-left: 15px;
     margin-right: 5px;
-    margin-top: 9px;
 }
 
 #eu-button {
-    background-color: white;
     visibility: hidden;
-    margin-left: 13px;
+    margin-left: 2px;
     margin-right: 5px;
-    margin-top: 9px;
 }
 
 #mideast-button {
-    background-color: white;
     visibility: hidden;
     margin-left: 15px;
     margin-right: 9px;
-    margin-top: 9px;
 }
 
 #na-button {
-    background-color: white;
     visibility: hidden;
-    margin-left: 32px;
-    margin-right: 20px;
-    margin-top: 9px;
+    margin-left: 27px;
+    margin-right: 10px;
 }
 
 #ocean-button {
-    background-color: white;
     visibility: hidden;
     margin-left: 15px;
     margin-right: 5px;
-    margin-top: 9px;
 }
 
 #sa-button {
-    background-color: white;
     visibility: hidden;
     margin-left: 50px;
+
 
 }
 
 #carib-button {
-    background-color: white;
     visibility: hidden;
-    margin-top: 9px;
     margin-left: 15px;
 
+}
+
+#all-button {
+    visibility: hidden;
+    margin-left: 50px;
 }
 

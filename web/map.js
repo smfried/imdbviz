@@ -223,104 +223,108 @@ function build_buttons(country_data) {
 }
 
 function display_countries(country_data, region) {
-	var num_countries = regions_with_countries[region].length;
+	if (region == "all") {
+		display_posters("all");
+	} else {
+		var num_countries = regions_with_countries[region].length;
 
-	var max = region_max[region];
+		var max = region_max[region];
 
-	var tooltip = d3.select("body")
-		.append("div")
-		.style("position", "absolute")
-		.style("z-index", "10")
-		.style("visibility", "hidden")
-		.style("font-family", "sans-serif")
-		.style("color", "white");
+		var tooltip = d3.select("body")
+			.append("div")
+			.style("position", "absolute")
+			.style("z-index", "10")
+			.style("visibility", "hidden")
+			.style("font-family", "sans-serif")
+			.style("color", "white");
 
-	var xscale = d3.scale.linear()
-					.domain([0,max])
-					.range([0,100]); //domain is input, range is output
+		var xscale = d3.scale.linear()
+						.domain([0,max])
+						.range([0,100]); //domain is input, range is output
 
-	var yscale = d3.scale.linear()
-					.domain([0,num_countries])
-					.range([0,num_countries*4]);
+		var yscale = d3.scale.linear()
+						.domain([0,num_countries])
+						.range([0,num_countries*4]);
 
-	d3.select("#graph").remove();
+		d3.select("#graph").remove();
 
-	var canvas = d3.select('.selection-box')
-					.append('svg')
-					.attr('id', 'graph')
-					.attr({'x': 1000, 'y': 10})
-					.attr({'width':200,'height':1200});
+		var canvas = d3.select('.selection-box')
+						.append('svg')
+						.attr('id', 'graph')
+						.attr({'x': 1000, 'y': 10})
+						.attr({'width':200,'height':1200});
 
-	//add mouseover for bars
-	var chart = canvas.append('g')
-				.attr('x', 20)
-				.attr('id', 'bars')
-				.selectAll('rect')
-				.data(d3.keys(country_data))
-				.enter()
-				.append('rect')
-				.attr('height', 20)
-				.attr({'x':140, 'y':function(d,i) {
-					if (regions_with_countries[region].indexOf(d) > -1) {
-						return yscale(regions_with_countries[region].indexOf(d)) + 30 + regions_with_countries[region].indexOf(d)*30; 
-					}
-				}})
-				.style('fill', function(d, i) {return colors[i % 16];})
-				.attr('width', function(d) {
-					if (regions_with_countries[region].indexOf(d) > -1) {
-						return xscale(country_data[d])
-					}
-				})
-				.on("mouseover", function(d){
-					return tooltip.text(country_data[d]).style("visibility", "visible");
-				})
-				.on("mousemove", function(d){
-					return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
-				})
-				.on("mouseout", function(d){
-					return tooltip.style("visibility", "hidden");
-				})
-				.on("click", function(d) {
-					display_posters(d);
-				}); 
+		//add mouseover for bars
+		var chart = canvas.append('g')
+					.attr('x', 20)
+					.attr('id', 'bars')
+					.selectAll('rect')
+					.data(d3.keys(country_data))
+					.enter()
+					.append('rect')
+					.attr('height', 20)
+					.attr({'x':140, 'y':function(d,i) {
+						if (regions_with_countries[region].indexOf(d) > -1) {
+							return yscale(regions_with_countries[region].indexOf(d)) + 30 + regions_with_countries[region].indexOf(d)*30; 
+						}
+					}})
+					.style('fill', function(d, i) {return colors[i % 16];})
+					.attr('width', function(d) {
+						if (regions_with_countries[region].indexOf(d) > -1) {
+							return xscale(country_data[d])
+						}
+					})
+					.on("mouseover", function(d){
+						return tooltip.text(country_data[d]).style("visibility", "visible");
+					})
+					.on("mousemove", function(d){
+						return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+					})
+					.on("mouseout", function(d){
+						return tooltip.style("visibility", "hidden");
+					})
+					.on("click", function(d) {
+						display_posters(d);
+					}); 
 
-	var y_pos;
-	var transitext = d3.select('#bars')
-						.selectAll('text')
-						.data(d3.keys(country_data))
-						.enter()
-						.append('text')
-						.attr({'x':function(d) {
-							if (regions_with_countries[region].indexOf(d) > -1) { //x coord of text
-								return 20; 
-							}
-						},'y':function(d,i) { 
-							if (regions_with_countries[region].indexOf(d) > -1) { 
-								return yscale(regions_with_countries[region].indexOf(d)) + 44 + regions_with_countries[region].indexOf(d)*30; 
-							}
-						}})
-						.text(function(d) { 
-							if (regions_with_countries[region].indexOf(d) > -1) {
-								if (d == "Bosnia and Herzegovina") {
-									return "Bosnia";
-								} else if (d == "Federal Republic of Yugoslavia") {
-									return "F.R. of Yugoslavia";
-								} else if (d == "Republic of Macedonia") {
-									return "Rep. of Macedonia";
-								} else if (d == "Serbia and Montenegro") {
-									return "Serbia";
+		var y_pos;
+		var transitext = d3.select('#bars')
+							.selectAll('text')
+							.data(d3.keys(country_data))
+							.enter()
+							.append('text')
+							.attr({'x':function(d) {
+								if (regions_with_countries[region].indexOf(d) > -1) { //x coord of text
+									return 20; 
 								}
-								else {
-									return d; 
+							},'y':function(d,i) { 
+								if (regions_with_countries[region].indexOf(d) > -1) { 
+									return yscale(regions_with_countries[region].indexOf(d)) + 44 + regions_with_countries[region].indexOf(d)*30; 
 								}
-							}
-						}).style({'fill':'black','font-size':'11px', 'font-family':'sans-serif', 'font-weight':'bold'});
+							}})
+							.text(function(d) { 
+								if (regions_with_countries[region].indexOf(d) > -1) {
+									if (d == "Bosnia and Herzegovina") {
+										return "Bosnia";
+									} else if (d == "Federal Republic of Yugoslavia") {
+										return "F.R. of Yugoslavia";
+									} else if (d == "Republic of Macedonia") {
+										return "Rep. of Macedonia";
+									} else if (d == "Serbia and Montenegro") {
+										return "Serbia";
+									}
+									else {
+										return d; 
+									}
+								}
+							}).style({'fill':'black','font-size':'11px', 'font-family':'sans-serif', 'font-weight':'bold'});
+		}
 
 }
 
 $.getJSON( "../data/data.json", function(json) {
 	imdb_data = json;
- 	display_posters("all");
+ 	display_posters("Cuba");
  	d3.select(".selection-box").style("background", "grey");
  	d3.selectAll("button").style("visibility", "visible");
  	d3.select("#title").style("visibility", "visible");
