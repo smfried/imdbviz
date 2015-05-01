@@ -1,12 +1,20 @@
 //thurs:
 /*
-GET RID OF OPACITY
-mouseover for graph to show numbers 
 
--fix sizing, do click
+fix graphs ? buttons for each country
+on click show title/director/year in side box (replace graphs)
+add go back to all button
+
+graph scaling, 
 -scale on graphs, axis on bottom
--styling
+-styling on graph/show and hide button - collapse
 -go back to all button
+
+-fix corner cases
+
+-animate graph, border on mouseover of bar
+
+mark which country was selected
 
 color palette and spacing
 
@@ -15,9 +23,6 @@ color palette and spacing
 (3. button backgrounds - make buttons pop / collapse css button)
 
 5. Add show all button to go back to start state / dateslider
-
-after click, mouseover animation
-then opacity/hide
 
 if time, general highlight box to click on graph and display films and highlight on mouseover / zooming
 
@@ -66,6 +71,9 @@ var country_list = ["Algeria", "Burkina Faso", "Chad", "Côte d'Ivoire", "Egypt"
 						"Argentina", "Brazil", "Chile", "Colombia", "Paraguay", "Peru", "Uruguay", "Venezuela",
 						"Cuba", "Dominican Republic", "Haiti", "Puerto Rico"];
 
+var region_max = {"Africa": 29, "Asia": 203, "Central America": 156, "Eastern Europe": 492, "European Union": 615,
+				"Middle East": 81, "North America": 1784, "Oceania": 64, "South America": 22, "The Caribbean": 5};
+
 function set_location(country) {
 	var start_x = 0;
 	var start_y = 0;
@@ -73,20 +81,19 @@ function set_location(country) {
 	var y_space = 0;
 
 	if(country == "all" || country == "USA") {
-		var films_per_row = 32;		//41
+		var films_per_row = 41;		//32?
 		var x_margin = 30;
 		var y_margin = 50;
 	} else {
 		var films_per_row = 8;
 		var x_margin = 150;
-		var y_margin = 210;
+		var y_margin = 220;
 	}
 
     for(var i=0;i<imdb_data.length;i++){
 		if (imdb_data[i].image[0]) { 
 			if (country == "all") {
 				imdb_data[i].x = start_x + (x_margin * x_space);
-				//change this to account for browser size
 				imdb_data[i].y = start_y + (y_margin * y_space);
 				x_space++;
 				if (x_space % films_per_row == 0) {
@@ -95,14 +102,13 @@ function set_location(country) {
 				}
 			} else if (imdb_data[i].country.indexOf(country) > -1) {
 				imdb_data[i].x = start_x + (x_margin * x_space) - 30;
-				//change this to account for browser size
 				imdb_data[i].y = start_y + (y_margin * y_space);
 				x_space++;
 				if (x_space % films_per_row == 0) {
 					x_space = 0;
 					y_space++;
 				}
-			}
+			} 	//need else if for USA
 		}
 	}
 
@@ -129,6 +135,9 @@ function display_posters(country) {
 		.attr('id', 'posters')
 		.attr("width", x)
 		.attr("height", 2800);
+		//.attr("perspective", "800px");
+
+	//on click checking global bool here
 
     var imgs = d3.select("#posters").selectAll("image")
     	.data(imdb_data)
@@ -145,6 +154,8 @@ function display_posters(country) {
     	})
     	.attr("x", function (d) { return d.x; }) 
     	.attr("y", function (d) { return d.y; })
+    	//.attr("transform-style", "preserve-3d")   //-webkit-transform-style: preserve-3d;
+ 		//.attr("transition", "0.5s")										// -webkit-transition: 0.5s;
     	.attr("width", function () {
     		if (country == "all" || country== "USA") {
     			return 50;
@@ -160,17 +171,38 @@ function display_posters(country) {
     		}
     	})
     	.on("mouseover", function (d) {	//need to fix for edge cases
+    		var sel = d3.select(this);
+    		this.parentNode.appendChild(this);
     		if (country == "all" || country == "USA") {
-    			var sel = d3.select(this);
-    			this.parentNode.appendChild(this);
-    			sel.attr("width", 100).attr("height", 100).attr("x", d.x - 25).attr("y", d.y - 25); //.transition(); //100, 25 looks good - 300 for zoom
+    			sel.attr("width", 175).attr("height", 175).attr("x", d.x - 30).attr("y", d.y - 30); //.transition(); //175, 30 looks good - 300 for zoom
+    		} else {
+    			sel.attr("width", 235).attr("height", 235).attr("x", d.x - 3).attr("y", d.y - 3)
     		}
     	})
     	.on("mouseout", function(d) {
     		if (country == "all" || country == "USA") {
     	  		d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
+    	  	} else {
+    	  		d3.select(this).attr("width", 225).attr("height", 225).attr("x", d.x).attr("y", d.y);
     	  	}
     	});
+    	// .on("click", function(d) {
+    	// 	var sel = d3.select(this);
+    	// 	//  -webkit-transform: rotatex(-180deg);
+    	// 	//sel.attr("transform", "rotateY(180deg)")
+    	// 	console.log(d.title[0]);
+    	// 	console.log(d.year[0]);
+    	// 	console.log(d.director[0]);
+    	// });
+
+    	// onclick
+    	// var transform_x = d.x - 50; //= d.x - 100;
+    	// var transform_y = d.y; //= d.y - 100;
+    	// if (d.x > 101) {
+    	// 	transform_x = d.x - 100;
+    	// } if (d.y >= 100) {
+    	// 	transform_y = d.y - 100;
+    	// }
 
 	    //add onlick for each image, create onclick function
 }
@@ -182,7 +214,6 @@ function build_buttons(country_data) {
 		});
 }
 
-
 //fix font and colors - sizes a little smaller to fit all of asia
 //onclick to each bar graph element which calls films render function
 //start out with all films displaying
@@ -190,21 +221,25 @@ function build_buttons(country_data) {
 function display_countries(country_data, region) {
 	var num_countries = regions_with_countries[region].length;
 	//console.log(num_countries);
+	// .on("click", function () {
+	// 	console.log("test");
+	// 	d3.select(this).attr("opacity", "0.0");
+	// 	//d3.select(this).attr("width", 50).attr("height", 50).attr("x", 1200);
+	// });  //.on("click", )	//hide and show
 
 	//xscale - max and with filter
 	//yscale - takes in i, replace with own function, domain is size of region
 
+	var max = region_max[region];
+	console.log(max);
+
 	var xscale = d3.scale.linear()
-					.domain([0,100])
-					.range([0,722]);
+					.domain([0,max])
+					.range([0,250]); //domain is input, range is output
 
 	var yscale = d3.scale.linear()
-					.domain([0,200]) //multiple by num_countries
-					.range([0,700]);
-
-	// var colorScale = d3.scale.quantize()
-	// 				.domain([0,20])
-	// 				.range(colors);		//TODO
+					.domain([0,num_countries])
+					.range([0,num_countries*5]);
 
 	d3.select("#graph").remove();
 
@@ -234,23 +269,22 @@ function display_countries(country_data, region) {
 						return xscale(country_data[d])
 					}
 				})
-				// .on("mouseover", function(d) {
-				// 	console.log(country_data[d]);
-				// })
-				.on("click", function(d) {	//TO DO
-					//console.log(d);
+				.on("mouseover", function(d) {
+					//console.log(country_data[d]);
+				})
+				.on("click", function(d) {
 					display_posters(d);
-				}); 
+				});		 
 
 	var y_pos;
-	var transitext = d3.select('#bars')
+	var transitext = d3.select('#bars')		//if too long, put on next line - get length of string js?
 						.selectAll('text')
 						.data(d3.keys(country_data))
 						.enter()
 						.append('text')
 						.attr({'x':function(d) {
 							if (regions_with_countries[region].indexOf(d) > -1) { //x coord of text
-								return d-200; 
+								return 20; 
 							}
 						},'y':function(d,i) { 
 							if (regions_with_countries[region].indexOf(d) > -1) { 
@@ -261,7 +295,8 @@ function display_countries(country_data, region) {
 							if (regions_with_countries[region].indexOf(d) > -1) {
 								return d; 
 							}
-						}).style({'fill':'black','font-size':'14px'});
+						}).style({'fill':'black','font-size':'11px', 'font-family':'sans-serif', 'font-weight':'bold'});
+
 }
 
 
@@ -269,7 +304,7 @@ function display_countries(country_data, region) {
 $.getJSON( "../data/data.json", function(json) {
 	imdb_data = json;
  	display_posters("Mexico");
- 	d3.select(".selection-box").style("background", "grey");  //.on("click", )	//hide and show
+ 	d3.select(".selection-box").style("background", "grey");
  	d3.selectAll("button").style("visibility", "visible");
 
  	$.getJSON("../data/country_data.json", function(json) {

@@ -10,9 +10,8 @@
 .selection-box {
     display: table;
     width: 250px;
-    height: 1000px;
+    height: 1100px;
     background: white;
-    opacity: .75;
     position: absolute;
     margin-left: 1000px;
 }
