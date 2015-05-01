@@ -10,7 +10,7 @@
 -mark which country was selected
 
 intro/scroll down and intro disappears - how to do this
-definitely write intro with some data analysis and observations about countries
+some data analysis and observations about countries
 US bias undoubtedly because IMDB is US-based? or is IMDB comprehensive, and the US makes the most movies (probably both but check)
 discuss a few examples
 
