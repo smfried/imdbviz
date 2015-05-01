@@ -324,8 +324,8 @@ function display_countries(country_data, region) {
 
 $.getJSON( "../data/data.json", function(json) {
 	imdb_data = json;
- 	display_posters("Cuba");
- 	d3.select(".selection-box").style("background", "grey");
+ 	display_posters("all");
+ 	d3.select(".selection-box").style("visibility", "visible");
  	d3.selectAll("button").style("visibility", "visible");
  	d3.select("#title").style("visibility", "visible");
  	d3.select("#year").style("visibility", "visible");

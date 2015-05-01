@@ -20,7 +20,8 @@
     display: table;
     width: 250px;
     height: 4000px;
-    background: white;
+    visibility: hidden;
+    background: #8C8D8F;
     position: absolute;
     margin-left: 1000px;
 }
