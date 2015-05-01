@@ -168,11 +168,6 @@ function display_posters(country) {
     		}
     	})
     	.on("mouseover", function (d) {
-    		// console.log(d);
-    		// if (d.title == "Innocent Voices") {
-    		// 	console.log(d.image);
-    		// }
-    		// console.log(d.title[0] + d.image);
     		var sel = d3.select(this);
     		this.parentNode.appendChild(this);
     		if(d.title[0] != "Ying xiong lie nu") {
