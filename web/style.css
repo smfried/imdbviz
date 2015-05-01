@@ -3,7 +3,7 @@
     width: 10px;
     height: 20px;
     background: white;
-    position: absolute;
+    position: fixed;
     margin-left: 1000px;
 }
 
@@ -31,6 +31,27 @@
 button {
     color: black;
     font-size: 7pt; 
+}
+
+#title {
+    margin-top: 20px;
+    margin-left: 12px;
+    font-family: sans-serif;
+
+}
+
+#year {
+    margin-left: 12px;
+    margin-top: 5px;
+    font-family: sans-serif;
+
+}
+
+#director {
+    margin-left: 12px;
+    margin-top: 5px;
+    font-family: sans-serif;
+
 }
 
 #afr-button {

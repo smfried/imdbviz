@@ -2,10 +2,11 @@
 /*
 
 essential: 
--click on poster and show data - also can be tooltip
+-bug with title of first film
 -fix text issue
 
-on click show title/director/year in side box (replace graphs)
+-make box scroll down
+
 add go back to all button
 
 -fix corner cases
@@ -172,6 +173,9 @@ function display_posters(country) {
     		}
     	})
     	.on("mouseover", function (d) {	//need to fix for edge cases
+    		d3.select("#title").text("Title: " + d.title[0])
+    		d3.select("#year").text("Year: " + d.year[0])
+    		d3.select("#director").text("Director: " + d.director[0])
     		var sel = d3.select(this);
     		this.parentNode.appendChild(this);
     		if (country == "all" || country == "USA") {
@@ -181,42 +185,15 @@ function display_posters(country) {
     		}
     	})
     	.on("mouseout", function(d) {
+    		// d3.select("#title").text("Title: ")
+    		// d3.select("#year").text("Year: ")
+    		// d3.select("#director").text("Director: ")
     		if (country == "all" || country == "USA") {
     	  		d3.select(this).attr("width", 50).attr("height", 50).attr("x", d.x).attr("y", d.y);
     	  	} else {
     	  		d3.select(this).attr("width", 225).attr("height", 225).attr("x", d.x).attr("y", d.y);
     	  	}
     	});
-
-    	// .on("mouseover", function(d){
-    	// 	return tooltip.text(country_data[d]).style("visibility", "visible");
-    	// })
-    	// .on("mousemove", function(d){
-    	// 	return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
-    	// })
-    	// .on("mouseout", function(d){
-    	// 	return tooltip.style("visibility", "hidden");
-    	// });
-
-    	// .on("click", function(d) {
-    	// 	var sel = d3.select(this);
-    	// 	//  -webkit-transform: rotatex(-180deg);
-    	// 	//sel.attr("transform", "rotateY(180deg)")
-    	// 	console.log(d.title[0]);
-    	// 	console.log(d.year[0]);
-    	// 	console.log(d.director[0]);
-    	// });
-
-    	// onclick
-    	// var transform_x = d.x - 50; //= d.x - 100;
-    	// var transform_y = d.y; //= d.y - 100;
-    	// if (d.x > 101) {
-    	// 	transform_x = d.x - 100;
-    	// } if (d.y >= 100) {
-    	// 	transform_y = d.y - 100;
-    	// }
-
-	    //add onlick for each image, create onclick function
 }
 
 function build_buttons(country_data) {	
@@ -296,13 +273,13 @@ function display_countries(country_data, region) {
 				})
 				.on("mouseout", function(d){
 					return tooltip.style("visibility", "hidden");
-				});
+				})
 				// .on("mouseover", function(d) {
 				// 	//console.log(country_data[d]);
 				// })
-				// .on("click", function(d) {
-				// 	display_posters(d);
-				// }); 
+				.on("click", function(d) {
+					display_posters(d);
+				}); 
 
 	var y_pos;
 	var transitext = d3.select('#bars')		//if too long, put on next line - get length of string js?
